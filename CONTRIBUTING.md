@@ -1,4 +1,4 @@
-# Contributing to phantomui
+# Contributing to ai-ui
 
 All skill levels welcome. Whether you're fixing a typo in the docs or adding a new MCP tool,
 the process is the same.
@@ -20,7 +20,7 @@ the process is the same.
 
 | Project | Why it's relevant |
 |---|---|
-| [Playwright](https://playwright.dev) | The test runner phantomui generates code for |
+| [Playwright](https://playwright.dev) | The test runner ai-ui generates code for |
 | [Model Context Protocol](https://modelcontextprotocol.io) | The protocol the MCP server implements |
 | [mcp-playwright](https://github.com/microsoft/mcp-playwright) | Prior art — Playwright via MCP |
 | [Claude API](https://docs.anthropic.com/en/api/getting-started) | The AI layer powering test generation and analysis |

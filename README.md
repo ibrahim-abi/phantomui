@@ -1,4 +1,4 @@
-# phantomui — AI-Powered UI Testing Platform
+# ai-ui — AI-Powered UI Testing Platform
 
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](./LICENSE)
 [![npm version](https://img.shields.io/npm/v/@ai-ui/sdk.svg)](https://www.npmjs.com/package/@ai-ui/sdk)

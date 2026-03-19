@@ -108,7 +108,7 @@ docs: update MCP tools reference for save_report
 
 ```
 ai-ui/
-├── sdk/          @ai-ui/sdk     — frontend SDK, zero deps
+├── sdk/          @phantomui/sdk     — frontend SDK, zero deps
 ├── server/       @ai-ui/server  — MCP server + HTTP API + reporters
 ├── runner/                      — Playwright runner helpers
 ├── examples/                    — Demo HTML pages

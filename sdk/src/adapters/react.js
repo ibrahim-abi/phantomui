@@ -5,7 +5,7 @@
  * and re-generates it on demand.
  *
  * Usage:
- *   import { useAiSnapshot } from '@ai-ui/sdk/adapters/react';
+ *   import { useAiSnapshot } from '@phantomui/sdk/adapters/react';
  *
  *   function MyComponent() {
  *     const { snapshot, refresh, isReady } = useAiSnapshot();

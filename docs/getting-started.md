@@ -32,7 +32,7 @@ gives Claude better context for generating accurate tests.
 ### Bundler / Node
 
 ```js
-const aiSdk = require('@ai-ui/sdk');
+const aiSdk = require('@phantomui/sdk');
 const snapshot = aiSdk.getSnapshot({ root: document });
 ```
 

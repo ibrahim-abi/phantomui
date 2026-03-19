@@ -1,5 +1,5 @@
 {
-  "name": "@ai-ui/sdk",
+  "name": "@phantomui/sdk",
   "version": "0.1.0",
   "description": "Zero-dependency SDK for AI-powered UI testing — tag your UI, let Claude test it",
   "main": "dist/index.cjs",

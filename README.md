@@ -1,10 +1,10 @@
 # ai-ui — AI-Powered UI Testing Platform
 
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](./LICENSE)
-[![npm version](https://img.shields.io/npm/v/@ai-ui/sdk.svg)](https://www.npmjs.com/package/@ai-ui/sdk)
+[![npm version](https://img.shields.io/npm/v/@phantomui/sdk.svg)](https://www.npmjs.com/package/@phantomui/sdk)
 [![CI](https://github.com/muhammad-ibrahim/ai-ui/actions/workflows/ci.yml/badge.svg)](https://github.com/muhammad-ibrahim/ai-ui/actions/workflows/ci.yml)
 [![MCP Compatible](https://img.shields.io/badge/MCP-compatible-blueviolet)](https://modelcontextprotocol.io)
-[![Node Version](https://img.shields.io/node/v/@ai-ui/sdk)](https://nodejs.org)
+[![Node Version](https://img.shields.io/node/v/@phantomui/sdk)](https://nodejs.org)
 
 > The invisible hand that tests your UI. Tag your elements once — let Claude do the rest.
 
@@ -44,13 +44,13 @@
 ### SDK — script tag (no build step)
 
 ```html
-<script src="https://unpkg.com/@ai-ui/sdk/dist/ai-sdk.js"></script>
+<script src="https://unpkg.com/@phantomui/sdk/dist/ai-sdk.js"></script>
 ```
 
 ### SDK — bundler / npm
 
 ```bash
-npm install @ai-ui/sdk
+npm install @phantomui/sdk
 ```
 
 ### MCP Server — add to Claude
@@ -86,7 +86,7 @@ npx @ai-ui/server --port 3100
   data-ai-context="login-form"
 >Sign In</button>
 
-<script src="https://unpkg.com/@ai-ui/sdk/dist/ai-sdk.js"></script>
+<script src="https://unpkg.com/@phantomui/sdk/dist/ai-sdk.js"></script>
 ```
 
 **Step 2 — Start the MCP server**
@@ -164,7 +164,7 @@ Three output formats, generated with `save_report`:
 
 ```
 ai-ui/
-├── sdk/                    # @ai-ui/sdk — zero-dependency frontend SDK
+├── sdk/                    # @phantomui/sdk — zero-dependency frontend SDK
 │   ├── src/ai-sdk.js       # SDK source
 │   ├── dist/ai-sdk.js      # Built output (bundled)
 │   └── scripts/build.js    # Build script

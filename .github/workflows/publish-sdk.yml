@@ -1,0 +1,57 @@
+name: Publish SDK
+
+on:
+  push:
+    tags:
+      - 'sdk/v*.*.*'
+
+jobs:
+  publish:
+    name: Publish to npm + GitHub Release
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+          registry-url: 'https://registry.npmjs.org'
+          cache: 'npm'
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Build SDK
+        run: npm run build --workspace=sdk
+
+      - name: Run server tests
+        run: npm test --workspace=server
+
+      - name: Extract semver from tag
+        id: version
+        run: |
+          TAG="${GITHUB_REF_NAME}"          # e.g. sdk/v1.2.0
+          SEMVER="${TAG#sdk/v}"             # e.g. 1.2.0
+          echo "semver=$SEMVER" >> "$GITHUB_OUTPUT"
+
+      - name: Bump sdk/package.json version
+        run: |
+          cd sdk
+          npm version "${{ steps.version.outputs.semver }}" --no-git-tag-version
+
+      - name: Publish to npm
+        run: npm publish --workspace=sdk --access public
+        env:
+          NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
+
+      - name: Create GitHub Release
+        uses: softprops/action-gh-release@v2
+        with:
+          tag_name: ${{ github.ref_name }}
+          name: SDK v${{ steps.version.outputs.semver }}
+          generate_release_notes: true
+          files: sdk/dist/ai-sdk.js

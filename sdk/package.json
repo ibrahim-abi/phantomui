@@ -1,0 +1,23 @@
+{
+  "name": "@ai-ui/sdk",
+  "version": "0.1.0",
+  "description": "Zero-dependency frontend SDK for AI-powered UI testing",
+  "main": "dist/ai-sdk.js",
+  "files": [
+    "dist",
+    "src"
+  ],
+  "scripts": {
+    "build": "node scripts/build.js",
+    "test": "node --experimental-vm-modules node_modules/.bin/jest"
+  },
+  "keywords": [
+    "ai-testing",
+    "ui-testing",
+    "mcp",
+    "playwright",
+    "sdk"
+  ],
+  "author": "Muhammad Ibrahim",
+  "license": "MIT"
+}

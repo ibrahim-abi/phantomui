@@ -1,0 +1,146 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>AI SDK — Checkout Form Example</title>
+  <style>
+    body { font-family: system-ui, sans-serif; max-width: 480px; margin: 60px auto; padding: 0 20px; }
+    h1, h2 { font-size: 1.2rem; }
+    label { display: block; font-size: .875rem; margin-bottom: 4px; color: #444; }
+    input, select {
+      width: 100%; padding: 8px 10px; border: 1px solid #ccc; border-radius: 6px;
+      font-size: 1rem; box-sizing: border-box; margin-bottom: 14px;
+    }
+    .row { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+    button { width: 100%; padding: 12px; background: #059669; color: #fff; border: none;
+             border-radius: 6px; font-size: 1rem; cursor: pointer; margin-top: 8px; }
+    button:hover { background: #047857; }
+    pre { background: #f4f4f5; padding: 16px; border-radius: 8px; font-size: .78rem;
+          overflow: auto; margin-top: 24px; white-space: pre-wrap; }
+  </style>
+</head>
+<body>
+
+  <h1>Checkout</h1>
+
+  <h2>Shipping Details</h2>
+  <form>
+    <label>Full Name</label>
+    <input
+      type="text" name="full-name" placeholder="Jane Smith"
+      data-ai-id="shipping-name"
+      data-ai-role="input"
+      data-ai-label="Full Name"
+      data-ai-context="shipping-form"
+      data-ai-required="true"
+    />
+
+    <label>Email</label>
+    <input
+      type="email" name="email" placeholder="jane@example.com"
+      data-ai-id="shipping-email"
+      data-ai-role="input"
+      data-ai-label="Email Address"
+      data-ai-context="shipping-form"
+      data-ai-required="true"
+    />
+
+    <label>Address</label>
+    <input
+      type="text" name="address" placeholder="123 Main St"
+      data-ai-id="shipping-address"
+      data-ai-role="input"
+      data-ai-label="Street Address"
+      data-ai-context="shipping-form"
+      data-ai-required="true"
+    />
+
+    <div class="row">
+      <div>
+        <label>City</label>
+        <input
+          type="text" name="city"
+          data-ai-id="shipping-city"
+          data-ai-role="input"
+          data-ai-label="City"
+          data-ai-context="shipping-form"
+          data-ai-required="true"
+        />
+      </div>
+      <div>
+        <label>ZIP Code</label>
+        <input
+          type="text" name="zip"
+          data-ai-id="shipping-zip"
+          data-ai-role="input"
+          data-ai-label="ZIP Code"
+          data-ai-context="shipping-form"
+          data-ai-required="true"
+        />
+      </div>
+    </div>
+
+    <h2>Payment</h2>
+
+    <label>Card Number</label>
+    <input
+      type="text" name="card-number" placeholder="•••• •••• •••• ••••"
+      data-ai-id="payment-card-number"
+      data-ai-role="input"
+      data-ai-label="Card Number"
+      data-ai-context="payment-form"
+      data-ai-required="true"
+    />
+
+    <div class="row">
+      <div>
+        <label>Expiry</label>
+        <input
+          type="text" name="expiry" placeholder="MM/YY"
+          data-ai-id="payment-expiry"
+          data-ai-role="input"
+          data-ai-label="Card Expiry"
+          data-ai-context="payment-form"
+          data-ai-required="true"
+        />
+      </div>
+      <div>
+        <label>CVV</label>
+        <input
+          type="text" name="cvv" placeholder="•••"
+          data-ai-id="payment-cvv"
+          data-ai-role="input"
+          data-ai-label="CVV"
+          data-ai-context="payment-form"
+          data-ai-required="true"
+        />
+      </div>
+    </div>
+
+    <button
+      type="submit"
+      data-ai-id="checkout-submit"
+      data-ai-role="action"
+      data-ai-action="submit"
+      data-ai-label="Place Order"
+      data-ai-context="checkout-form"
+    >
+      Place Order
+    </button>
+  </form>
+
+  <pre id="snapshot-output">Click "Get Snapshot" to see output...</pre>
+  <button onclick="showSnapshot()" style="background:#2563eb; margin-top:8px;">
+    Get Snapshot
+  </button>
+
+  <script src="../sdk/dist/ai-sdk.js"></script>
+  <script>
+    function showSnapshot() {
+      var snapshot = window.__aiSdk.getSnapshot();
+      document.getElementById('snapshot-output').textContent =
+        JSON.stringify(snapshot, null, 2);
+    }
+  </script>
+</body>
+</html>

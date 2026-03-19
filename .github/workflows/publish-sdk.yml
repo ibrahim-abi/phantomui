@@ -41,9 +41,9 @@ jobs:
           npm version "${{ steps.version.outputs.semver }}" --no-git-tag-version || true
 
       - name: Publish to npm
-        run: cd sdk && npm publish --access public
-        env:
-          NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
+        run: |
+          echo "//registry.npmjs.org/:_authToken=${{ secrets.NPM_TOKEN }}" >> ~/.npmrc
+          cd sdk && npm publish --access public
 
       - name: Create GitHub Release
         uses: softprops/action-gh-release@v2
@@ -83,6 +83,6 @@ jobs:
           npm pkg set publishConfig.registry='https://npm.pkg.github.com'
 
       - name: Publish to GitHub Packages
-        run: cd sdk && npm publish --access public
-        env:
-          NODE_AUTH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          echo "//npm.pkg.github.com/:_authToken=${{ secrets.GITHUB_TOKEN }}" >> ~/.npmrc
+          cd sdk && npm publish --access public

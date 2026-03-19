@@ -42,8 +42,14 @@ jobs:
 
       - name: Publish to npm
         run: |
-          echo "//registry.npmjs.org/:_authToken=${{ secrets.NPM_TOKEN }}" >> ~/.npmrc
-          cd sdk && npm publish --access public
+          npm config set //registry.npmjs.org/:_authToken ${{ secrets.NPM_TOKEN }}
+          cd sdk
+          VERSION=$(node -p "require('./package.json').version")
+          if npm view @phantomui/sdk@$VERSION > /dev/null 2>&1; then
+            echo "Version $VERSION already published — skipping."
+          else
+            npm publish --access public
+          fi
 
       - name: Create GitHub Release
         uses: softprops/action-gh-release@v2

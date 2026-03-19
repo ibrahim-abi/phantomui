@@ -2,7 +2,7 @@
 
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](./LICENSE)
 [![npm version](https://img.shields.io/npm/v/@phantomui/sdk.svg)](https://www.npmjs.com/package/@phantomui/sdk)
-[![CI](https://github.com/muhammad-ibrahim/ai-ui/actions/workflows/ci.yml/badge.svg)](https://github.com/muhammad-ibrahim/ai-ui/actions/workflows/ci.yml)
+[![CI](https://github.com/ibrahim-abi/phantomui/actions/workflows/ci.yml/badge.svg)](https://github.com/ibrahim-abi/phantomui/actions/workflows/ci.yml)
 [![MCP Compatible](https://img.shields.io/badge/MCP-compatible-blueviolet)](https://modelcontextprotocol.io)
 [![Node Version](https://img.shields.io/node/v/@phantomui/sdk)](https://nodejs.org)
 
@@ -56,13 +56,13 @@ npm install @phantomui/sdk
 ### MCP Server — add to Claude
 
 ```bash
-claude mcp add ai-ui-server -- npx @ai-ui/server
+claude mcp add ai-ui-server -- npx @phantomui/server
 ```
 
 Or run the HTTP server directly:
 
 ```bash
-npx @ai-ui/server --port 3100
+npx @phantomui/server --port 3100
 ```
 
 ---
@@ -92,7 +92,7 @@ npx @ai-ui/server --port 3100
 **Step 2 — Start the MCP server**
 
 ```bash
-npx @ai-ui/server
+npx @phantomui/server
 ```
 
 **Step 3 — Ask Claude**

@@ -1,0 +1,86 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>AI SDK — Login Form Example</title>
+  <style>
+    body { font-family: system-ui, sans-serif; max-width: 420px; margin: 60px auto; padding: 0 20px; }
+    h1   { font-size: 1.4rem; margin-bottom: 24px; }
+    label { display: block; font-size: .875rem; margin-bottom: 4px; color: #444; }
+    input { width: 100%; padding: 8px 10px; border: 1px solid #ccc; border-radius: 6px;
+            font-size: 1rem; box-sizing: border-box; margin-bottom: 16px; }
+    button { width: 100%; padding: 10px; background: #2563eb; color: #fff; border: none;
+             border-radius: 6px; font-size: 1rem; cursor: pointer; }
+    button:hover { background: #1d4ed8; }
+    pre  { background: #f4f4f5; padding: 16px; border-radius: 8px; font-size: .8rem;
+           overflow: auto; margin-top: 24px; white-space: pre-wrap; }
+  </style>
+</head>
+<body>
+
+  <h1>Login</h1>
+
+  <!--
+    Manual data-ai-* tagging.
+    Every element that matters to a test has:
+      data-ai-id      → stable, unique, semantic name
+      data-ai-role    → what kind of element it is
+      data-ai-context → which form/section it belongs to
+  -->
+  <form>
+    <label for="email">Email</label>
+    <input
+      id="email"
+      type="email"
+      name="email"
+      placeholder="you@example.com"
+      data-ai-id="login-email"
+      data-ai-role="input"
+      data-ai-label="Email Address"
+      data-ai-context="login-form"
+      data-ai-required="true"
+      data-ai-state="empty"
+    />
+
+    <label for="password">Password</label>
+    <input
+      id="password"
+      type="password"
+      name="password"
+      placeholder="••••••••"
+      data-ai-id="login-password"
+      data-ai-role="input"
+      data-ai-label="Password"
+      data-ai-context="login-form"
+      data-ai-required="true"
+      data-ai-state="empty"
+    />
+
+    <button
+      type="submit"
+      data-ai-id="login-submit"
+      data-ai-role="action"
+      data-ai-action="submit"
+      data-ai-label="Sign In"
+      data-ai-context="login-form"
+    >
+      Sign In
+    </button>
+  </form>
+
+  <!-- Snapshot output for demo purposes -->
+  <pre id="snapshot-output">Click "Get Snapshot" to see output...</pre>
+  <button onclick="showSnapshot()" style="margin-top:8px; background:#16a34a;">
+    Get Snapshot
+  </button>
+
+  <script src="../sdk/dist/ai-sdk.js"></script>
+  <script>
+    function showSnapshot() {
+      var snapshot = window.__aiSdk.getSnapshot();
+      document.getElementById('snapshot-output').textContent =
+        JSON.stringify(snapshot, null, 2);
+    }
+  </script>
+</body>
+</html>

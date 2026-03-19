@@ -1,0 +1,16 @@
+{
+  "name": "ai-ui",
+  "version": "0.1.0",
+  "description": "AI-powered UI Testing SDK with MCP Server",
+  "private": true,
+  "workspaces": [
+    "sdk",
+    "server",
+    "runner"
+  ],
+  "scripts": {
+    "test": "npm test --workspaces --if-present"
+  },
+  "author": "Muhammad Ibrahim",
+  "license": "MIT"
+}

@@ -1,0 +1,33 @@
+# Dependencies
+node_modules/
+
+# Build output
+dist/
+*.js.map
+*.d.ts.map
+
+# Environment — never commit secrets
+.env
+.env.local
+.env.*.local
+
+# Logs
+*.log
+npm-debug.log*
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Test artifacts
+/tmp/playwright-test-*.js
+playwright-report/
+test-results/
+
+# Claude Code settings (local only)
+.claude/
+
+# Downloaded zip archives and extracted third-party repos
+*.zip
+mcp-playwright-main/
+playwright-skill-main/

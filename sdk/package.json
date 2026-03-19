@@ -1,24 +1,64 @@
 {
   "name": "@ai-ui/sdk",
   "version": "0.1.0",
-  "description": "Zero-dependency frontend SDK for AI-powered UI testing",
-  "main": "dist/ai-sdk.js",
-  "module": "src/index.js",
+  "description": "Zero-dependency SDK for AI-powered UI testing — tag your UI, let Claude test it",
+  "main": "dist/index.cjs",
+  "module": "dist/index.mjs",
+  "types": "dist/index.d.ts",
+  "exports": {
+    ".": {
+      "import":  "./dist/index.mjs",
+      "require": "./dist/index.cjs",
+      "types":   "./dist/index.d.ts"
+    },
+    "./browser": "./dist/ai-sdk.js",
+    "./adapters/react": {
+      "require": "./dist/adapters/react.js",
+      "types":   "./dist/adapters/react.d.ts"
+    },
+    "./adapters/vue": {
+      "require": "./dist/adapters/vue.js",
+      "types":   "./dist/adapters/vue.d.ts"
+    },
+    "./adapters/angular": {
+      "require": "./dist/adapters/angular.js",
+      "types":   "./dist/adapters/angular.d.ts"
+    }
+  },
   "files": [
     "dist",
     "src"
   ],
+  "sideEffects": false,
   "scripts": {
     "build": "node scripts/build.js",
-    "test": "node --experimental-vm-modules node_modules/.bin/jest"
+    "test":  "node --experimental-vm-modules node_modules/.bin/jest"
+  },
+  "peerDependencies": {
+    "react": ">=16.8.0",
+    "vue":   ">=3.0.0"
+  },
+  "peerDependenciesMeta": {
+    "react": { "optional": true },
+    "vue":   { "optional": true }
   },
   "keywords": [
     "ai-testing",
     "ui-testing",
     "mcp",
     "playwright",
-    "sdk"
+    "claude",
+    "sdk",
+    "testing-automation"
   ],
+  "homepage": "https://github.com/ibrahim-abi/phantomui#readme",
+  "repository": {
+    "type": "git",
+    "url":  "git+https://github.com/ibrahim-abi/phantomui.git"
+  },
+  "bugs": {
+    "url": "https://github.com/ibrahim-abi/phantomui/issues"
+  },
   "author": "Muhammad Ibrahim",
   "license": "MIT"
 }

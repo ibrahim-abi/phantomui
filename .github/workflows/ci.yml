@@ -25,6 +25,10 @@ jobs:
       - name: Build server
         run: npm run build --workspace=server
 
+      - name: Install Playwright browsers
+        run: npx playwright install --with-deps chromium
+        working-directory: server
+
       - name: Run server tests
         run: npm test --workspace=server
 

@@ -40,6 +40,17 @@ jobs:
           cd sdk
           npm version "${{ steps.version.outputs.semver }}" --no-git-tag-version || true
 
+      - name: Check NPM_TOKEN
+        run: |
+          if [ -z "$NPM_TOKEN" ]; then
+            echo "ERROR: NPM_TOKEN is empty or not set"
+            exit 1
+          else
+            echo "NPM_TOKEN is available (length: ${#NPM_TOKEN})"
+          fi
+        env:
+          NPM_TOKEN: ${{ secrets.NPM_TOKEN }}
+
       - name: Publish to npm
         run: |
           npm config set //registry.npmjs.org/:_authToken ${{ secrets.NPM_TOKEN }}

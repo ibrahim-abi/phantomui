@@ -1,25 +1,17 @@
 /*!
- * AI UI SDK v0.1.0
- * Zero-dependency frontend SDK for AI-powered UI testing.
- * https://github.com/muhammadibrahim/ai-ui
- *
+ * @ai-ui/sdk v0.1.0
+ * Zero-dependency SDK for AI-powered UI testing.
+ * https://github.com/ibrahim-abi/phantomui
  * (c) Muhammad Ibrahim — MIT License
- *
- * Usage:
- *   <script src="ai-sdk.js"></script>
- *   const snapshot = window.__aiSdk.getSnapshot();
  */
 (function (global) {
   'use strict';
-
-  // ─── Safety: disable in production ────────────────────────────────────────
   try {
     if (typeof process !== 'undefined' && process.env && process.env.NODE_ENV === 'production') return;
-  } catch (e) {}
+  } catch(e) {}
 
   var VERSION = '0.1.0';
 
-  // ─── Attribute constants ──────────────────────────────────────────────────
   var ATTRS = {
     ID:       'data-ai-id',
     ROLE:     'data-ai-role',
@@ -30,7 +22,6 @@
     STATE:    'data-ai-state',
   };
 
-  // ─── Scanner ──────────────────────────────────────────────────────────────
   function scan(root) {
     var nodes = root.querySelectorAll('[' + ATTRS.ID + ']');
     return Array.from(nodes).map(function (el) {
@@ -49,12 +40,11 @@
     });
   }
 
-  // ─── Auto-tagger ─────────────────────────────────────────────────────────
   var HEURISTICS = [
     { selector: 'input:not([type="hidden"]), textarea, select', role: 'input'   },
-    { selector: 'button, [type="submit"], [type="button"], [type="reset"]', role: 'action' },
-    { selector: 'a[href]',                                                  role: 'nav'    },
-    { selector: 'h1, h2, h3, h4, h5, h6',                                  role: 'display'},
+    { selector: 'button, [type="submit"], [type="button"], [type="reset"]', role: 'action'  },
+    { selector: 'a[href]',                                                  role: 'nav'     },
+    { selector: 'h1, h2, h3, h4, h5, h6',                                  role: 'display' },
   ];
 
   function autoTag(root) {
@@ -62,17 +52,13 @@
     var results = [];
     var counter = 0;
     var seen    = new Set();
-
     for (var i = 0; i < HEURISTICS.length; i++) {
       var rule  = HEURISTICS[i];
       var nodes = root.querySelectorAll(rule.selector);
-
       for (var j = 0; j < nodes.length; j++) {
         var el = nodes[j];
         if (tagged.has(el) || seen.has(el)) continue;
-        seen.add(el);
-        counter++;
-
+        seen.add(el); counter++;
         results.push({
           id:       'auto-' + rule.role + '-' + counter,
           role:     rule.role,
@@ -102,8 +88,7 @@
                 el.getAttribute('title')       ||
                 el.getAttribute('alt');
     if (label) return label.trim();
-    var text = el.textContent ? el.textContent.trim() : null;
-    return text || null;
+    return el.textContent ? el.textContent.trim() : null;
   }
 
   function buildSelector(el) {
@@ -118,37 +103,24 @@
     return tag;
   }
 
-  // ─── Serializer ───────────────────────────────────────────────────────────
-  function serialize(manual, auto) {
+  function serialize(manual, auto, globalScope) {
+    var url = null;
+    try { url = (globalScope || (typeof window !== 'undefined' ? window : null)).location.href; } catch(e) {}
     return {
-      url:       global.location ? global.location.href : null,
+      url:       url,
       timestamp: new Date().toISOString(),
       elements:  manual.concat(auto),
-      meta: {
-        manualCount: manual.length,
-        autoCount:   auto.length,
-        sdkVersion:  VERSION,
-      },
+      meta: { manualCount: manual.length, autoCount: auto.length, sdkVersion: VERSION },
     };
   }
 
-  // ─── Public API ───────────────────────────────────────────────────────────
   function getSnapshot(options) {
-    options  = options || {};
-    var root = options.root    || global.document;
+    options = options || {};
+    var root   = options.root   || (typeof document !== 'undefined' ? document : null);
     var doAuto = options.autoTag !== false;
-
-    if (!root) throw new Error('[ai-sdk] No DOM root. Pass options.root or run in a browser.');
-
-    var manual = scan(root);
-    var auto   = doAuto ? autoTag(root) : [];
-    return serialize(manual, auto);
+    if (!root) throw new Error('[ai-sdk] No DOM root available. Pass options.root or run in a browser.');
+    return serialize(scan(root), doAuto ? autoTag(root) : []);
   }
 
-  // Expose on window
-  global.__aiSdk = {
-    version:     VERSION,
-    getSnapshot: getSnapshot,
-  };
-
+  global.__aiSdk = { version: VERSION, getSnapshot: getSnapshot };
 }(typeof window !== 'undefined' ? window : this));

@@ -12,7 +12,7 @@
  *   const snapshot = window.__aiSdk.getSnapshot();
  *
  * Usage (Node / bundler):
- *   const aiSdk = require('@ai-ui/sdk');
+ *   const aiSdk = require('@phantomui/sdk');
  *   const snapshot = aiSdk.getSnapshot({ root: document });
  */
 

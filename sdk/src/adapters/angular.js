@@ -5,7 +5,7 @@
  *
  * Usage (standalone / module-based):
  *   // app.module.ts or standalone providers
- *   import { AiSdkService } from '@ai-ui/sdk/adapters/angular';
+ *   import { AiSdkService } from '@phantomui/sdk/adapters/angular';
  *   providers: [AiSdkService]
  *
  *   // In a component:

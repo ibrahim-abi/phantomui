@@ -1,5 +1,5 @@
 import React, { useState } from 'react'
-import aiSdk from '@ai-ui/sdk'
+import aiSdk from '@phantomui/sdk'
 
 export default function SnapshotViewer() {
   const [snapshot, setSnapshot] = useState(null)

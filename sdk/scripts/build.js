@@ -1,6 +1,6 @@
 #!/usr/bin/env node
 /**
- * Build script for @ai-ui/sdk
+ * Build script for @phantomui/sdk
  *
  * Outputs:
  *   dist/index.cjs          — CommonJS bundle (Node / bundlers)
@@ -154,7 +154,7 @@ const CORE = `
 `;
 
 const BANNER = `/*!
- * @ai-ui/sdk v${VERSION}
+ * @phantomui/sdk v${VERSION}
  * Zero-dependency SDK for AI-powered UI testing.
  * https://github.com/ibrahim-abi/phantomui
  * (c) Muhammad Ibrahim — MIT License
@@ -206,7 +206,7 @@ ${CORE}
 
 // ─── 4. TypeScript declarations ──────────────────────────────────────────────
 
-write('index.d.ts', `// @ai-ui/sdk v${VERSION} — TypeScript declarations
+write('index.d.ts', `// @phantomui/sdk v${VERSION} — TypeScript declarations
 
 export type ElementRole = 'input' | 'action' | 'display' | 'nav';
 export type ElementSource = 'manual' | 'auto';
@@ -274,7 +274,7 @@ export default aiSdk;
 const reactSrc = read('adapters/react.js');
 write('adapters/react.js', `${BANNER}\n${reactSrc}`);
 
-write('adapters/react.d.ts', `// @ai-ui/sdk/adapters/react — TypeScript declarations
+write('adapters/react.d.ts', `// @phantomui/sdk/adapters/react — TypeScript declarations
 import type { UiSnapshot, SnapshotOptions } from '../index';
 
 export interface UseAiSnapshotOptions extends SnapshotOptions {
@@ -305,7 +305,7 @@ export declare function useAiSnapshot(options?: UseAiSnapshotOptions): UseAiSnap
 const vueSrc = read('adapters/vue.js');
 write('adapters/vue.js', `${BANNER}\n${vueSrc}`);
 
-write('adapters/vue.d.ts', `// @ai-ui/sdk/adapters/vue — TypeScript declarations
+write('adapters/vue.d.ts', `// @phantomui/sdk/adapters/vue — TypeScript declarations
 import type { App, Ref } from 'vue';
 import type { UiSnapshot, SnapshotOptions } from '../index';
 
@@ -342,7 +342,7 @@ export declare const AiSdkPlugin: { install(app: App, options?: SnapshotOptions)
 const angularSrc = read('adapters/angular.js');
 write('adapters/angular.js', `${BANNER}\n${angularSrc}`);
 
-write('adapters/angular.d.ts', `// @ai-ui/sdk/adapters/angular — TypeScript declarations
+write('adapters/angular.d.ts', `// @phantomui/sdk/adapters/angular — TypeScript declarations
 import type { UiSnapshot, SnapshotOptions } from '../index';
 
 /** Injectable Angular service for capturing UI snapshots */
@@ -355,4 +355,4 @@ export declare class AiSdkService {
 
 // ─── Summary ─────────────────────────────────────────────────────────────────
 
-console.log(`\n@ai-ui/sdk v${VERSION} built successfully.\n`);
+console.log(`\n@phantomui/sdk v${VERSION} built successfully.\n`);

@@ -4,7 +4,7 @@
  * Provides a Vue 3 composable useAiSnapshot() and a Vue 2/3 plugin.
  *
  * Vue 3 Composition API usage:
- *   import { useAiSnapshot } from '@ai-ui/sdk/adapters/vue';
+ *   import { useAiSnapshot } from '@phantomui/sdk/adapters/vue';
  *
  *   export default {
  *     setup() {
@@ -14,7 +14,7 @@
  *   }
  *
  * Vue plugin usage (registers $aiSdk on every component):
- *   import { AiSdkPlugin } from '@ai-ui/sdk/adapters/vue';
+ *   import { AiSdkPlugin } from '@phantomui/sdk/adapters/vue';
  *   app.use(AiSdkPlugin);
  *   // then in any component: this.$aiSdk.getSnapshot()
  */

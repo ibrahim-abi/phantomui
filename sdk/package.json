@@ -3,6 +3,7 @@
   "version": "0.1.0",
   "description": "Zero-dependency frontend SDK for AI-powered UI testing",
   "main": "dist/ai-sdk.js",
+  "module": "src/index.js",
   "files": [
     "dist",
     "src"

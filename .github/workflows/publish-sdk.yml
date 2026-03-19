@@ -41,7 +41,7 @@ jobs:
           npm version "${{ steps.version.outputs.semver }}" --no-git-tag-version || true
 
       - name: Publish to npm
-        run: npm publish --workspace=sdk --access public
+        run: cd sdk && npm publish --access public
         env:
           NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
 
@@ -83,6 +83,6 @@ jobs:
           npm pkg set publishConfig.registry='https://npm.pkg.github.com'
 
       - name: Publish to GitHub Packages
-        run: npm publish --workspace=sdk --access public
+        run: cd sdk && npm publish --access public
         env:
           NODE_AUTH_TOKEN: ${{ secrets.GITHUB_TOKEN }}

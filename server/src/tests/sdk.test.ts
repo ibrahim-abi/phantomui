@@ -35,7 +35,7 @@ describe('scanner', () => {
         <button data-ai-id="submit" data-ai-role="action" data-ai-label="Submit">Go</button>
       </body></html>
     `);
-    const elements = scanner.scan(win.document);
+    const { elements } = scanner.scan(win.document);
     assert.equal(elements.length, 2);
     assert.ok(elements.every((e: any) => e.source === 'manual'));
     assert.ok(elements.some((e: any) => e.id === 'email'));
@@ -44,7 +44,7 @@ describe('scanner', () => {
 
   test('returns empty array when no tagged elements', () => {
     const win = makeWindow('<html><body><p>Hello</p></body></html>');
-    const elements = scanner.scan(win.document);
+    const { elements } = scanner.scan(win.document);
     assert.equal(elements.length, 0);
   });
 });

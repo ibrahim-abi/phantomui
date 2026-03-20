@@ -99,6 +99,13 @@ jobs:
           npm pkg set name='@ibrahim-abi/sdk'
 
       - name: Publish to GitHub Packages
-        run: cd sdk && npm publish --access public
+        run: |
+          cd sdk
+          VERSION=$(node -p "require('./package.json').version")
+          if npm view @ibrahim-abi/sdk@$VERSION --registry https://npm.pkg.github.com > /dev/null 2>&1; then
+            echo "Version $VERSION already on GitHub Packages — skipping."
+          else
+            npm publish --access public
+          fi
         env:
           NODE_AUTH_TOKEN: ${{ secrets.GITHUB_TOKEN }}

@@ -97,9 +97,8 @@ jobs:
         run: |
           cd sdk
           npm pkg set name='@ibrahim-abi/sdk'
-          npm pkg set publishConfig.registry='https://npm.pkg.github.com'
 
       - name: Publish to GitHub Packages
-        run: |
-          echo "//npm.pkg.github.com/:_authToken=${{ secrets.GITHUB_TOKEN }}" >> ~/.npmrc
-          cd sdk && npm publish --access public
+        run: cd sdk && npm publish --access public
+        env:
+          NODE_AUTH_TOKEN: ${{ secrets.GITHUB_TOKEN }}

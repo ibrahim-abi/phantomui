@@ -1,28 +1,28 @@
 {
   "name": "@phantomui/sdk",
-  "version": "0.1.0",
+  "version": "0.1.1",
   "description": "Zero-dependency SDK for AI-powered UI testing — tag your UI, let Claude test it",
   "main": "dist/index.cjs",
   "module": "dist/index.mjs",
   "types": "dist/index.d.ts",
   "exports": {
     ".": {
-      "import":  "./dist/index.mjs",
+      "import": "./dist/index.mjs",
       "require": "./dist/index.cjs",
-      "types":   "./dist/index.d.ts"
+      "types": "./dist/index.d.ts"
     },
     "./browser": "./dist/ai-sdk.js",
     "./adapters/react": {
       "require": "./dist/adapters/react.js",
-      "types":   "./dist/adapters/react.d.ts"
+      "types": "./dist/adapters/react.d.ts"
     },
     "./adapters/vue": {
       "require": "./dist/adapters/vue.js",
-      "types":   "./dist/adapters/vue.d.ts"
+      "types": "./dist/adapters/vue.d.ts"
     },
     "./adapters/angular": {
       "require": "./dist/adapters/angular.js",
-      "types":   "./dist/adapters/angular.d.ts"
+      "types": "./dist/adapters/angular.d.ts"
     }
   },
   "files": [
@@ -35,15 +35,19 @@
   "sideEffects": false,
   "scripts": {
     "build": "node scripts/build.js",
-    "test":  "node --experimental-vm-modules node_modules/.bin/jest"
+    "test": "node --experimental-vm-modules node_modules/.bin/jest"
   },
   "peerDependencies": {
     "react": ">=16.8.0",
-    "vue":   ">=3.0.0"
+    "vue": ">=3.0.0"
   },
   "peerDependenciesMeta": {
-    "react": { "optional": true },
-    "vue":   { "optional": true }
+    "react": {
+      "optional": true
+    },
+    "vue": {
+      "optional": true
+    }
   },
   "keywords": [
     "ai-testing",
@@ -57,7 +61,7 @@
   "homepage": "https://github.com/ibrahim-abi/phantomui#readme",
   "repository": {
     "type": "git",
-    "url":  "git+https://github.com/ibrahim-abi/phantomui.git"
+    "url": "git+https://github.com/ibrahim-abi/phantomui.git"
   },
   "bugs": {
     "url": "https://github.com/ibrahim-abi/phantomui/issues"

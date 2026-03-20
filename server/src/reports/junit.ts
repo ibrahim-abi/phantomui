@@ -34,11 +34,16 @@ export function generateJunitReport(results: TestResult[]): string {
     const suiteSkipped  = result.steps.filter(s => s.status === 'skipped').length;
     const suiteTime     = (result.durationMs / 1000).toFixed(3);
 
+    const coveredCount = result.coveredSelectors?.length ?? 0;
+    const totalCount   = result.snapshotElementCount ?? 0;
+    const coverageVal  = totalCount ? `${coveredCount}/${totalCount}` : `${coveredCount}/unknown`;
+
     parts.push(
       `  <testsuite name="${escXml(result.scenario)}" tests="${suiteTests}" ` +
       `failures="${suiteFailures}" skipped="${suiteSkipped}" time="${suiteTime}" ` +
       `timestamp="${escXml(result.startedAt)}">`
     );
+    parts.push(`    <properties><property name="coverage" value="${coverageVal}"/></properties>`);
 
     for (const step of result.steps) {
       const stepName = step.step.description ??

@@ -27,7 +27,7 @@ export const GET_RESULTS_TOOL = {
 export async function handleGetResults(args: unknown): Promise<CallToolResult> {
   const { run_id } = GetResultsSchema.parse(args);
 
-  const record = getRecord(run_id);
+  const record = await getRecord(run_id);
 
   if (!record) {
     return {

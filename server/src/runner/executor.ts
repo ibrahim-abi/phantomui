@@ -3,13 +3,13 @@
  * Takes a TestScenario, runs each step with Playwright, and returns a TestResult.
  */
 
-import { chromium } from 'playwright';
-import type { Page } from 'playwright';
+import type { Page, Frame } from 'playwright';
 import { randomUUID } from 'crypto';
 import type { TestScenario, TestStep, TestResult, StepResult, TestStatus } from '../types.js';
 import { storeResult } from './store.js';
 import { applySession } from './session.js';
 import type { SessionConfig } from './session.js';
+import { ensureBrowser } from '../browser.js';
 
 const DEFAULT_TIMEOUT = 15_000; // ms per step
 
@@ -22,39 +22,86 @@ const DEFAULT_TIMEOUT = 15_000; // ms per step
 export async function executeScenario(
   scenario: TestScenario,
   session?: SessionConfig,
+  snapshotElementCount?: number,
+  snapshotWarnings?: string[],
 ): Promise<TestResult> {
   const runId     = randomUUID();
   const startedAt = new Date().toISOString();
   const wallStart = Date.now();
 
-  const headless = process.env.HEADLESS !== 'false';
-  const browser  = await chromium.launch({ headless });
+  const browser  = await ensureBrowser();
   const context  = await browser.newContext({ viewport: { width: 1280, height: 720 } });
   const page     = await context.newPage();
+
+  // Apply network mocks before any navigation
+  for (const mock of scenario.networkMocks ?? []) {
+    await page.route(mock.urlPattern, route => route.fulfill({
+      status:      mock.status ?? 200,
+      contentType: mock.contentType ?? 'application/json',
+      body:        JSON.stringify(mock.body),
+    }));
+  }
 
   if (session) {
     await applySession(page, context, session);
   }
 
-  const stepResults: StepResult[] = [];
+  const stepResults: StepResult[]  = [];
+  const coveredSelectors           = new Set<string>();
   let   scenarioStatus: TestStatus = 'passed';
   let   scenarioError:  string | undefined;
-  let   failedIndex = -1;
 
   for (let i = 0; i < scenario.steps.length; i++) {
     const step      = scenario.steps[i];
     const stepStart = Date.now();
     let   status: TestStatus = 'passed';
     let   error:  string | undefined;
+    let   screenshotBase64: string | undefined;
+    let   stateChange: { before: string | null; after: string | null } | undefined;
+
+    // Read element state before action (for interactive steps with a target)
+    const isInteractive = ['click', 'fill', 'select', 'hover', 'check'].includes(step.action);
+    if (isInteractive && step.target) {
+      try {
+        const before = await page.getAttribute(step.target, 'data-ai-state').catch(() => null);
+        if (before === 'disabled') {
+          error = `Warning: element "${step.target}" has state "disabled" — proceeding anyway`;
+        }
+        stateChange = { before, after: null };
+      } catch {
+        // ignore state-read errors
+      }
+    }
 
     try {
       await runStep(page, step);
+
+      // Track covered selectors for coverage report
+      if (step.target && ['fill', 'click', 'select', 'assert', 'hover', 'check'].includes(step.action)) {
+        coveredSelectors.add(step.target);
+      }
+
+      // Read state after action
+      if (stateChange && step.target) {
+        try {
+          stateChange.after = await page.getAttribute(step.target, 'data-ai-state').catch(() => null);
+        } catch {
+          stateChange.after = null;
+        }
+      }
     } catch (err) {
       status         = 'failed';
       error          = (err as Error).message;
       scenarioStatus = 'failed';
       scenarioError  = error;
-      failedIndex    = i;
+
+      // Capture screenshot on failure
+      try {
+        const buf = await page.screenshot({ type: 'png', fullPage: false });
+        screenshotBase64 = buf.toString('base64');
+      } catch {
+        // ignore screenshot errors
+      }
     }
 
     stepResults.push({
@@ -62,6 +109,8 @@ export async function executeScenario(
       status,
       error,
       durationMs: Date.now() - stepStart,
+      screenshotBase64,
+      stateChange,
     });
 
     if (status === 'failed') {
@@ -73,17 +122,20 @@ export async function executeScenario(
     }
   }
 
-  await browser.close();
+  await context.close();
 
   const result: TestResult = {
     runId,
-    scenario:   scenario.name,
-    status:     scenarioStatus,
-    steps:      stepResults,
+    scenario:            scenario.name,
+    status:              scenarioStatus,
+    steps:               stepResults,
     startedAt,
-    finishedAt: new Date().toISOString(),
-    durationMs: Date.now() - wallStart,
-    error:      scenarioError,
+    finishedAt:          new Date().toISOString(),
+    durationMs:          Date.now() - wallStart,
+    error:               scenarioError,
+    coveredSelectors:    [...coveredSelectors],
+    snapshotElementCount,
+    snapshotWarnings,
   };
 
   storeResult(result, scenario);
@@ -94,6 +146,13 @@ export async function executeScenario(
 
 async function runStep(page: Page, step: TestStep): Promise<void> {
   const timeout = step.timeout ?? DEFAULT_TIMEOUT;
+
+  // If frameSelector is set, operate inside that frame
+  let target: Page | Frame = page;
+  if (step.frameSelector) {
+    const frame = page.frame({ url: step.frameSelector }) ?? page.frameLocator(step.frameSelector).first();
+    target = frame as unknown as Frame;
+  }
 
   switch (step.action) {
     case 'navigate':
@@ -125,13 +184,40 @@ async function runStep(page: Page, step: TestStep): Promise<void> {
 
     case 'wait':
       if (step.target) {
-        // Wait for element state
         const state = step.value === 'hidden' ? 'hidden' : 'visible';
         await page.waitForSelector(step.target, { state, timeout });
       } else {
-        // Wait fixed duration
         const ms = parseInt(step.value ?? '1000', 10);
         await page.waitForTimeout(ms);
+      }
+      break;
+
+    case 'hover':
+      if (!step.target) throw new Error('hover requires a target selector');
+      await page.hover(step.target, { timeout });
+      break;
+
+    case 'keyboard':
+      if (!step.value) throw new Error('keyboard requires a value (key name, e.g. "Enter")');
+      await page.keyboard.press(step.value);
+      break;
+
+    case 'scroll':
+      if (step.target) {
+        await page.locator(step.target).scrollIntoViewIfNeeded({ timeout });
+      } else {
+        const y = parseInt(step.value ?? '0', 10);
+        await page.evaluate((scrollY) => window.scrollTo(0, scrollY), y);
+      }
+      break;
+
+    case 'check':
+      if (!step.target) throw new Error('check requires a target selector');
+      await page.waitForSelector(step.target, { state: 'visible', timeout });
+      if (step.value === 'false') {
+        await page.uncheck(step.target);
+      } else {
+        await page.check(step.target);
       }
       break;
 

@@ -55,15 +55,36 @@ export async function handleGetUiSnapshot(args: GetUiSnapshotArgs): Promise<Call
 
     if (!raw) {
       return {
-        content: [{ type: 'text', text: 'AI SDK not found on page. Ensure ai-sdk.js is loaded.' }],
+        content: [{
+          type: 'text',
+          text:
+            'AI SDK not found on page (window.__aiSdk is undefined).\n\n' +
+            'To fix this, load the SDK before running tests:\n\n' +
+            '  Option 1 — Script tag (plain HTML):\n' +
+            '    <script src="node_modules/@phantomui/sdk/dist/ai-sdk.js"></script>\n\n' +
+            '  Option 2 — npm install:\n' +
+            '    npm install @phantomui/sdk\n' +
+            '    Then in your app: import "@phantomui/sdk"  (or require("@phantomui/sdk"))\n\n' +
+            'For framework-specific setup (React/Vue/Angular) see:\n' +
+            '  https://github.com/ibrahim-abi/phantomui/blob/main/docs/getting-started.md',
+        }],
         isError: true,
       };
     }
 
     const snapshot = validateSnapshot(raw);
 
+    let text = JSON.stringify(snapshot, null, 2);
+    if (snapshot.warnings && snapshot.warnings.length > 0) {
+      const warningBlock =
+        '⚠ Snapshot Quality Warnings:\n' +
+        snapshot.warnings.map(w => `• ${w}`).join('\n') +
+        '\n\n';
+      text = warningBlock + text;
+    }
+
     return {
-      content: [{ type: 'text', text: JSON.stringify(snapshot, null, 2) }],
+      content: [{ type: 'text', text }],
       isError: false,
     };
   } finally {

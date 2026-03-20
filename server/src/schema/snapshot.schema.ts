@@ -30,13 +30,17 @@ export const UiSnapshotSchema = z.object({
   url:       z.string().nullable(),
   timestamp: z.string().datetime({ message: 'timestamp must be ISO 8601' }),
   elements:  z.array(ElementDescriptorSchema),
+  warnings:  z.array(z.string()).optional(),
   meta:      SnapshotMetaSchema,
 });
 
 export type ValidatedSnapshot = z.infer<typeof UiSnapshotSchema>;
 
+const SERVER_MAJOR = 0; // must match SDK major version
+
 /**
  * Validates a raw snapshot object. Throws a descriptive error on failure.
+ * Also enforces SDK ↔ server major version compatibility.
  */
 export function validateSnapshot(raw: unknown): ValidatedSnapshot {
   const result = UiSnapshotSchema.safeParse(raw);
@@ -46,5 +50,15 @@ export function validateSnapshot(raw: unknown): ValidatedSnapshot {
       .join('\n');
     throw new Error(`Invalid UI snapshot:\n${issues}`);
   }
+
+  const sdkVersion = result.data.meta.sdkVersion;
+  const sdkMajor   = parseInt(sdkVersion.split('.')[0]!, 10);
+  if (!isNaN(sdkMajor) && sdkMajor !== SERVER_MAJOR) {
+    throw new Error(
+      `SDK version ${sdkVersion} is incompatible with server v${SERVER_MAJOR}.x. ` +
+      `Update @phantomui/sdk to a v${SERVER_MAJOR}.x release.`
+    );
+  }
+
   return result.data;
 }

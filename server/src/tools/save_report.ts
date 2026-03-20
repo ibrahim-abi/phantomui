@@ -62,7 +62,7 @@ export async function handleSaveReport(args: unknown): Promise<CallToolResult> {
   let results: TestResult[];
 
   if (parsed.run_id) {
-    const record = getRecord(parsed.run_id);
+    const record = await getRecord(parsed.run_id);
     if (!record) {
       return {
         content: [{ type: 'text', text: `No run found with id: ${parsed.run_id}` }],
@@ -71,15 +71,16 @@ export async function handleSaveReport(args: unknown): Promise<CallToolResult> {
     }
     results = [record.result];
   } else {
-    const ids = listRunIds();
+    const ids = await listRunIds();
     if (ids.length === 0) {
       return {
         content: [{ type: 'text', text: 'No test runs stored. Run a test first with run_test.' }],
         isError: true,
       };
     }
-    results = ids
-      .map(id => getRecord(id)?.result)
+    const records = await Promise.all(ids.map(id => getRecord(id)));
+    results = records
+      .map(r => r?.result)
       .filter((r): r is TestResult => r !== undefined);
   }
 

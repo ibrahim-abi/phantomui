@@ -41,10 +41,12 @@ interface TestScenario {
 }
 
 interface TestStep {
-  action: "navigate" | "fill" | "click" | "select" | "assert" | "wait";
+  action: "navigate" | "fill" | "click" | "select" | "assert" | "wait"
+        | "hover" | "keyboard" | "scroll" | "check";
   target?: string;   // CSS selector or URL (for navigate/assert url)
   value?: string;    // fill value, assertion text, or wait duration in ms
   description?: string; // short human description of this step
+  frameSelector?: string; // optional: run this step inside a frame/iframe
 }
 \`\`\`
 
@@ -63,6 +65,13 @@ interface TestStep {
 ## Wait Step Usage
 - action: "wait", value: "2000" — wait 2000ms
 - action: "wait", target: "<selector>", value: "visible" — wait for element to appear
+
+## Additional Step Actions
+- action: "hover", target: "<selector>" — hover over element (triggers tooltips, dropdowns)
+- action: "keyboard", value: "Enter" — press a keyboard key (Enter, Tab, Escape, ArrowDown, etc.)
+- action: "scroll", value: "500" — scroll window to Y=500px
+- action: "scroll", target: "<selector>" — scroll element into view
+- action: "check", target: "<selector>", value: "true" — check a checkbox; value: "false" to uncheck
 `.trim();
 
 /**

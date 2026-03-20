@@ -2,17 +2,39 @@ const ATTRS = require('./attributes');
 
 /**
  * Scans the DOM for manually tagged elements (those with data-ai-id).
- * Returns an array of element descriptors with source: "manual".
+ * Returns an object with element descriptors (source: "manual") and
+ * a warnings array listing any duplicate data-ai-id values found.
  *
  * @param {Document|Element} root - Root node to scan. Defaults to document.
- * @returns {ElementDescriptor[]}
+ * @returns {{ elements: ElementDescriptor[], warnings: string[] }}
  */
 function scan(root) {
   root = root || document;
   const nodes = root.querySelectorAll('[' + ATTRS.ID + ']');
-  return Array.from(nodes).map(function(el) {
+  var elements = Array.from(nodes).map(function(el) {
     return readElement(el);
   });
+
+  // Detect duplicate data-ai-id values
+  var seen = {};
+  var duplicates = {};
+  var warnings = [];
+  for (var i = 0; i < elements.length; i++) {
+    var id = elements[i].id;
+    if (seen[id]) {
+      if (!duplicates[id]) {
+        duplicates[id] = true;
+        var msg = '[ai-sdk] Duplicate data-ai-id "' + id + '" — each ID must be unique. ' +
+                  'Duplicate IDs produce ambiguous selectors and unreliable test generation.';
+        console.warn(msg);
+        warnings.push(msg);
+      }
+    } else {
+      seen[id] = true;
+    }
+  }
+
+  return { elements: elements, warnings: warnings };
 }
 
 /**

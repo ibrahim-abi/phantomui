@@ -54,7 +54,7 @@ export const RETRY_FAILED_TOOL = {
 export async function handleRetryFailed(args: unknown): Promise<CallToolResult> {
   const { run_id, overrides, full_rerun } = RetryFailedSchema.parse(args);
 
-  const record = getRecord(run_id);
+  const record = await getRecord(run_id);
   if (!record) {
     return {
       content: [{ type: 'text', text: `No result found for runId: ${run_id}` }],

@@ -1,0 +1,77 @@
+name: 'PhantomUI Run Tests'
+description: 'Snapshot a live URL, generate AI test scenarios, run them with Playwright, and publish results'
+
+inputs:
+  url:
+    description: 'Full URL of the page to test (e.g. https://staging.example.com/login)'
+    required: true
+  format:
+    description: 'Report format: html, junit, or json'
+    default: 'html'
+  hints:
+    description: 'Optional natural-language hints for the AI test generator'
+    default: ''
+  anthropic-api-key:
+    description: 'Anthropic API key (falls back to ANTHROPIC_API_KEY env var)'
+    required: false
+  out-dir:
+    description: 'Directory to write reports to'
+    default: './phantomui-reports'
+
+runs:
+  using: 'composite'
+  steps:
+    - name: Set up Node.js
+      uses: actions/setup-node@v4
+      with:
+        node-version: '20'
+
+    - name: Install dependencies
+      shell: bash
+      run: npm ci
+
+    - name: Build server and CLI
+      shell: bash
+      run: npm run build
+
+    - name: Install Playwright browsers
+      shell: bash
+      run: npx playwright install chromium --with-deps
+
+    - name: Run PhantomUI tests
+      shell: bash
+      env:
+        ANTHROPIC_API_KEY: ${{ inputs.anthropic-api-key || env.ANTHROPIC_API_KEY }}
+      run: |
+        mkdir -p ${{ inputs.out-dir }}
+        npx phantomui test "${{ inputs.url }}" \
+          --format junit \
+          --out "${{ inputs.out-dir }}/results.xml" \
+          ${{ inputs.hints && format('--hints "{0}"', inputs.hints) || '' }}
+
+    - name: Generate HTML report
+      if: inputs.format == 'html' || inputs.format == ''
+      shell: bash
+      env:
+        ANTHROPIC_API_KEY: ${{ inputs.anthropic-api-key || env.ANTHROPIC_API_KEY }}
+      run: |
+        npx phantomui test "${{ inputs.url }}" \
+          --format html \
+          --out "${{ inputs.out-dir }}/report.html" \
+          ${{ inputs.hints && format('--hints "{0}"', inputs.hints) || '' }} || true
+
+    - name: Upload test artifacts
+      uses: actions/upload-artifact@v4
+      if: always()
+      with:
+        name: phantomui-report
+        path: ${{ inputs.out-dir }}/
+        retention-days: 30
+
+    - name: Publish JUnit results
+      uses: mikepenz/action-junit-report@v4
+      if: always()
+      with:
+        report_paths: '${{ inputs.out-dir }}/results.xml'
+        check_name: 'PhantomUI Test Results'
+        fail_on_failure: true

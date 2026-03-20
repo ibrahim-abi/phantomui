@@ -4,6 +4,15 @@
   "description": "MCP-compliant server for AI-powered UI testing",
   "type": "module",
   "main": "dist/index.js",
+  "exports": {
+    ".": { "types": "./dist/index.d.ts", "default": "./dist/index.js" },
+    "./tools/snapshot": { "types": "./dist/tools/get_ui_snapshot.d.ts", "default": "./dist/tools/get_ui_snapshot.js" },
+    "./generator": { "types": "./dist/ai/generator.d.ts", "default": "./dist/ai/generator.js" },
+    "./executor": { "types": "./dist/runner/executor.d.ts", "default": "./dist/runner/executor.js" },
+    "./reports": { "types": "./dist/reports/index.d.ts", "default": "./dist/reports/index.js" },
+    "./browser": { "types": "./dist/browser.d.ts", "default": "./dist/browser.js" },
+    "./types": { "types": "./dist/types.d.ts", "default": "./dist/types.js" }
+  },
   "bin": {
     "ai-ui-server": "dist/index.js"
   },

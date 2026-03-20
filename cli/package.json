@@ -1,0 +1,23 @@
+{
+  "name": "@phantomui/cli",
+  "version": "0.1.0",
+  "description": "CLI for PhantomUI — AI-powered UI testing in one command",
+  "type": "module",
+  "bin": {
+    "phantomui": "dist/index.js"
+  },
+  "scripts": {
+    "build": "tsc",
+    "dev": "tsc --watch"
+  },
+  "dependencies": {
+    "@ai-ui/server": "*",
+    "dotenv": "^17.3.1"
+  },
+  "devDependencies": {
+    "@types/node": "^20.10.5",
+    "typescript": "^5.8.3"
+  },
+  "author": "Muhammad Ibrahim",
+  "license": "MIT"
+}

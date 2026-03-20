@@ -1,7 +1,7 @@
 {
   "name": "@phantomui/sdk",
-  "version": "0.1.1",
-  "description": "Zero-dependency SDK for AI-powered UI testing — tag your UI, let Claude test it",
+  "version": "0.1.2",
+  "description": "AI-powered UI testing SDK using semantic HTML attributes instead of fragile CSS selectors",
   "main": "dist/index.cjs",
   "module": "dist/index.mjs",
   "types": "dist/index.d.ts",
@@ -50,12 +50,17 @@
     }
   },
   "keywords": [
-    "ai-testing",
+    "ai",
+    "testing",
+    "sdk",
+    "ui",
+    "automation",
     "ui-testing",
+    "ai-testing",
     "mcp",
     "playwright",
     "claude",
-    "sdk",
+    "semantic-html",
     "testing-automation"
   ],
   "homepage": "https://github.com/ibrahim-abi/phantomui#readme",

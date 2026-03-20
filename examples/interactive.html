@@ -1,0 +1,58 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>Interactive Test Fixture</title>
+  <style>
+    body { font-family: system-ui, sans-serif; padding: 20px; }
+    #hover-btn { padding: 8px 16px; cursor: pointer; }
+    #key-input { padding: 6px; border: 1px solid #ccc; }
+    #agree-label { display: block; margin-top: 12px; }
+    #scroll-anchor { margin-top: 2000px; }
+    #user-name { margin-top: 12px; font-weight: 600; }
+  </style>
+</head>
+<body>
+
+  <!-- Hover + state tracking -->
+  <button
+    id="hover-btn"
+    data-ai-state="idle"
+    onmouseover="this.setAttribute('data-ai-state','hovered')"
+  >Hover Me</button>
+
+  <!-- Keyboard test: focus and press a key -->
+  <input id="key-input" type="text" placeholder="Focus then press a key" />
+  <span id="key-log"></span>
+
+  <!-- Check / uncheck -->
+  <label id="agree-label">
+    <input type="checkbox" id="agree" />
+    I agree
+  </label>
+
+  <!-- Scroll: tall spacer so page is scrollable -->
+  <div id="scroll-anchor">Bottom of page</div>
+
+  <!-- Network mock test: fetch /api/user and render the name -->
+  <div id="user-name">Loading...</div>
+
+  <script>
+    // Keyboard log
+    document.getElementById('key-input').addEventListener('keydown', function(e) {
+      document.getElementById('key-log').textContent += e.key;
+    });
+
+    // Network fetch — Playwright will intercept this with a route mock
+    fetch('https://api.example.com/api/user')
+      .then(function(r) { return r.json(); })
+      .then(function(data) {
+        document.getElementById('user-name').textContent = data.name || 'Unknown';
+      })
+      .catch(function() {
+        document.getElementById('user-name').textContent = 'Error';
+      });
+  </script>
+
+</body>
+</html>

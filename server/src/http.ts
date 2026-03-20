@@ -103,9 +103,9 @@ export async function startHttpServer(port: number): Promise<void> {
   });
 
   /** Fetch a stored test result by runId */
-  app.get('/results/:runId', (req: Request, res: Response) => {
+  app.get('/results/:runId', async (req: Request, res: Response) => {
     const runId  = String(req.params['runId']);
-    const record = getRecord(runId);
+    const record = await getRecord(runId);
     if (!record) {
       res.status(404).json({ error: `Run not found: ${runId}` });
       return;
@@ -114,7 +114,7 @@ export async function startHttpServer(port: number): Promise<void> {
   });
 
   /** Generate a report for a stored run (or all runs) */
-  app.post('/report', (req: Request, res: Response) => {
+  app.post('/report', async (req: Request, res: Response) => {
     const { runId, format } = req.body as { runId?: string; format?: string };
 
     if (!format || !['json', 'html', 'junit'].includes(format)) {
@@ -125,16 +125,16 @@ export async function startHttpServer(port: number): Promise<void> {
     let results: TestResult[];
 
     if (runId) {
-      const record = getRecord(runId);
+      const record = await getRecord(runId);
       if (!record) {
         res.status(404).json({ error: `Run not found: ${runId}` });
         return;
       }
       results = [record.result];
     } else {
-      results = listRunIds()
-        .map(id => getRecord(id)?.result)
-        .filter((r): r is TestResult => r !== undefined);
+      const ids = await listRunIds();
+      const records = await Promise.all(ids.map(id => getRecord(id)));
+      results = records.map(r => r?.result).filter((r): r is TestResult => r !== undefined);
 
       if (results.length === 0) {
         res.status(404).json({ error: 'No test runs stored. Run a test first via POST /run.' });

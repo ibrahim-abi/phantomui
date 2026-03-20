@@ -18,6 +18,16 @@ export function generateHtmlReport(results: TestResult[]): string {
   const skipped         = results.filter(r => r.status === 'skipped').length;
   const totalDurationMs = results.reduce((sum, r) => sum + r.durationMs, 0);
 
+  // Coverage across all results
+  const allCovered      = new Set(results.flatMap(r => r.coveredSelectors ?? []));
+  const snapshotCount   = results[0]?.snapshotElementCount;
+  const coveragePct     = snapshotCount
+    ? Math.round((allCovered.size / snapshotCount) * 100)
+    : null;
+
+  // Snapshot warnings across all results
+  const allWarnings     = results.flatMap(r => r.snapshotWarnings ?? []);
+
   const parts: string[] = [];
 
   parts.push(`<!DOCTYPE html>
@@ -41,6 +51,10 @@ export function generateHtmlReport(results: TestResult[]): string {
   .card.fail  .value { color: #dc2626; }
   .card.skip  .value { color: #d97706; }
   .card.dur   .value { font-size: 1.25rem; color: #555; }
+  .card.cov   .value { font-size: 1.25rem; color: #2563eb; }
+  .warnings-card { background: #fffbeb; border: 1px solid #fde68a; border-radius: 8px; padding: 14px 20px; margin: 0 32px 16px; }
+  .warnings-card .wlabel { font-size: 0.8rem; font-weight: 600; color: #92400e; margin-bottom: 6px; }
+  .warnings-card ul { font-size: 0.8rem; color: #78350f; padding-left: 16px; }
   .scenarios { padding: 0 32px 32px; display: flex; flex-direction: column; gap: 16px; }
   .scenario { background: #fff; border-radius: 8px; box-shadow: 0 1px 3px rgba(0,0,0,.1); overflow: hidden; }
   .scenario-header { display: flex; align-items: center; gap: 12px; padding: 14px 20px; border-bottom: 1px solid #eee; }
@@ -60,6 +74,7 @@ export function generateHtmlReport(results: TestResult[]): string {
   .icon-skip { color: #d97706; }
   .error-msg { color: #dc2626; font-size: 0.8rem; margin-top: 4px; }
   code { background: #f3f4f6; padding: 1px 6px; border-radius: 4px; font-size: 0.8rem; font-family: 'SFMono-Regular', Consolas, monospace; }
+  .screenshot { max-width: 100%; margin-top: 8px; border: 1px solid #eee; border-radius: 4px; display: block; }
 </style>
 </head>
 <body>
@@ -73,8 +88,19 @@ export function generateHtmlReport(results: TestResult[]): string {
   <div class="card fail"><div class="label">Failed</div><div class="value">${failed}</div></div>
   <div class="card skip"><div class="label">Skipped</div><div class="value">${skipped}</div></div>
   <div class="card dur"><div class="label">Duration</div><div class="value">${(totalDurationMs / 1000).toFixed(2)}s</div></div>
-</div>
-<div class="scenarios">`);
+  ${coveragePct !== null
+    ? `<div class="card cov"><div class="label">Coverage</div><div class="value">${allCovered.size}/${snapshotCount} (${coveragePct}%)</div></div>`
+    : ''}
+</div>`);
+
+  if (allWarnings.length > 0) {
+    parts.push(`<div class="warnings-card">
+  <div class="wlabel">⚠ Snapshot Quality Warnings</div>
+  <ul>${allWarnings.map(w => `<li>${escHtml(w)}</li>`).join('')}</ul>
+</div>`);
+  }
+
+  parts.push(`<div class="scenarios">`);
 
   for (const result of results) {
     const stepsPassed  = result.steps.filter(s => s.status === 'passed').length;
@@ -103,11 +129,14 @@ export function generateHtmlReport(results: TestResult[]): string {
       const value     = step.step.value  ? ` = ${escHtml(step.step.value)}` : '';
       const desc      = step.step.description ? escHtml(step.step.description) : '';
       const errorHtml = step.error ? `<div class="error-msg">${escHtml(step.error)}</div>` : '';
+      const screenshotHtml = (step.status === 'failed' && step.screenshotBase64)
+        ? `<img class="screenshot" src="data:image/png;base64,${step.screenshotBase64}" alt="Failure screenshot" />`
+        : '';
 
       parts.push(`      <tr>
         <td>${i + 1}</td>
         <td><strong>${escHtml(step.step.action)}</strong>${desc ? `<div class="meta">${desc}</div>` : ''}</td>
-        <td>${target}${value}${errorHtml}</td>
+        <td>${target}${value}${errorHtml}${screenshotHtml}</td>
         <td>${icon}</td>
         <td class="meta">${step.durationMs}ms</td>
       </tr>`);

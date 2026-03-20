@@ -70,6 +70,7 @@ interface UiSnapshot {
   url:       string | null;     // current page URL or null
   timestamp: string;            // ISO 8601 capture time
   elements:  ElementDescriptor[];
+  warnings?: string[];          // duplicate data-ai-id warnings (if any)
   meta:      SnapshotMeta;
 }
 
@@ -104,3 +105,113 @@ When `autoTag: true` (the default), the SDK scans for:
 
 Auto-tagged elements receive a generated `id` like `auto-input-0`. They are always skipped
 if they already have a `data-ai-id` attribute.
+
+---
+
+## Framework Adapters
+
+The SDK ships built-in adapters for React, Vue, and Angular. All are zero-dependency wrappers
+that lazy-load the framework at runtime — they can safely be imported without the framework
+being globally available.
+
+### React — `useAiSnapshot` hook
+
+Requires React 16.8+ (hooks).
+
+```js
+import { useAiSnapshot } from '@phantomui/sdk/adapters/react';
+
+function MyComponent() {
+  const { snapshot, refresh, isReady } = useAiSnapshot({ autoTag: true });
+
+  if (!isReady) return <p>Loading snapshot…</p>;
+
+  return (
+    <div>
+      <p>{snapshot.elements.length} elements found</p>
+      <button onClick={refresh}>Re-snapshot</button>
+    </div>
+  );
+}
+```
+
+**Options:**
+
+| Option | Type | Default | Description |
+|---|---|---|---|
+| `autoTag` | `boolean` | `true` | Include auto-tagged elements |
+| `lazy` | `boolean` | `false` | Don't snapshot on mount; wait for `refresh()` |
+
+**Returns:** `{ snapshot, refresh, isReady }`
+
+---
+
+### Vue 3 — `useAiSnapshot` composable + `AiSdkPlugin`
+
+#### Composable (Composition API)
+
+```js
+import { useAiSnapshot } from '@phantomui/sdk/adapters/vue';
+
+export default {
+  setup() {
+    const { snapshot, refresh, isReady } = useAiSnapshot({ autoTag: true });
+    return { snapshot, refresh, isReady };
+  },
+};
+```
+
+#### Plugin (registers `$aiSdk` globally)
+
+```js
+// main.js
+import { createApp } from 'vue';
+import { AiSdkPlugin } from '@phantomui/sdk/adapters/vue';
+import App from './App.vue';
+
+const app = createApp(App);
+app.use(AiSdkPlugin, { autoTag: true });
+app.mount('#app');
+
+// In any component:
+// this.$aiSdk.getSnapshot()
+// this.$aiSdk.version
+```
+
+---
+
+### Angular — `AiSdkService`
+
+Add to your module/component providers, then inject as normal.
+
+```ts
+// app.module.ts
+import { AiSdkService } from '@phantomui/sdk/adapters/angular';
+
+@NgModule({
+  providers: [AiSdkService],
+})
+export class AppModule {}
+
+// my.component.ts
+import { AiSdkService } from '@phantomui/sdk/adapters/angular';
+
+@Component({ ... })
+export class MyComponent implements OnInit {
+  snapshot: any;
+
+  constructor(private aiSdk: AiSdkService) {}
+
+  ngOnInit() {
+    this.snapshot = this.aiSdk.getSnapshot();
+  }
+}
+```
+
+**Methods:**
+
+| Method | Returns | Description |
+|---|---|---|
+| `getSnapshot(options?)` | `UiSnapshot` | Full snapshot of current page |
+| `getElementsByRole(role)` | `ElementDescriptor[]` | Filter elements by role |
+| `getManualElements()` | `ElementDescriptor[]` | Only manually tagged elements |

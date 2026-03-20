@@ -36,6 +36,41 @@ const aiSdk = require('@phantomui/sdk');
 const snapshot = aiSdk.getSnapshot({ root: document });
 ```
 
+### React
+
+```js
+import { useAiSnapshot } from '@phantomui/sdk/adapters/react';
+
+function MyApp() {
+  const { snapshot, refresh, isReady } = useAiSnapshot();
+  // snapshot.elements contains all tagged + auto-tagged UI elements
+}
+```
+
+### Vue 3
+
+```js
+import { useAiSnapshot, AiSdkPlugin } from '@phantomui/sdk/adapters/vue';
+
+// Option A: Composition API composable
+const { snapshot, refresh } = useAiSnapshot();
+
+// Option B: Plugin (adds this.$aiSdk to every component)
+app.use(AiSdkPlugin);
+```
+
+### Angular
+
+```ts
+import { AiSdkService } from '@phantomui/sdk/adapters/angular';
+
+// Add to providers, then inject:
+constructor(private aiSdk: AiSdkService) {}
+ngOnInit() { this.snapshot = this.aiSdk.getSnapshot(); }
+```
+
+See [sdk-reference.md](./sdk-reference.md#framework-adapters) for full adapter API docs.
+
 ---
 
 ## Step 3 — Install the MCP server
@@ -105,3 +140,50 @@ curl http://localhost:3100/health
 ```
 
 See [mcp-tools.md](./mcp-tools.md) and the HTTP routes for full API details.
+
+---
+
+## LLM Provider Configuration
+
+PhantomUI supports multiple LLM backends. The server auto-detects which provider to use based
+on environment variables — no code changes required.
+
+### Anthropic Claude (default)
+
+```bash
+export ANTHROPIC_API_KEY=sk-ant-...
+# Optionally override the model:
+export AI_MODEL=claude-opus-4-6
+```
+
+### Ollama (local, free)
+
+Run tests entirely offline using a local Ollama instance. No API key needed.
+
+```bash
+# Install Ollama: https://ollama.ai
+ollama pull llama3.1
+
+export LLM_PROVIDER=ollama
+export OLLAMA_MODEL=llama3.1          # default: llama3.1
+export OLLAMA_BASE_URL=http://localhost:11434  # default
+```
+
+### OpenAI-compatible APIs
+
+Works with OpenAI, Azure OpenAI, Together AI, Groq, or any OpenAI-compatible endpoint.
+
+```bash
+export LLM_PROVIDER=openai-compatible
+export OPENAI_COMPATIBLE_BASE_URL=https://api.openai.com/v1
+export OPENAI_COMPATIBLE_API_KEY=sk-...
+export OPENAI_COMPATIBLE_MODEL=gpt-4o   # default: gpt-4o
+```
+
+### Auto-detection priority
+
+If `LLM_PROVIDER` is not set, the server picks a provider automatically:
+
+1. `ANTHROPIC_API_KEY` is set → use Anthropic Claude
+2. `OPENAI_COMPATIBLE_BASE_URL` is set → use OpenAI-compatible
+3. Neither → fall back to local Ollama (`http://localhost:11434`)

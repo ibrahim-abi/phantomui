@@ -6,10 +6,12 @@
   "workspaces": [
     "sdk",
     "server",
-    "runner"
+    "cli"
   ],
   "scripts": {
-    "test": "npm test --workspaces --if-present"
+    "build": "npm run build --workspace sdk && npm run build --workspace server && npm run build --workspace cli",
+    "test": "npm test --workspaces --if-present",
+    "demo": "bash demo/run-demo.sh"
   },
   "author": "Muhammad Ibrahim",
   "license": "MIT"

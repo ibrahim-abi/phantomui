@@ -4,13 +4,22 @@
  */
 
 import { chromium, Browser, Page } from 'playwright';
+import { UserFriendlyError } from './errors.js';
 
 let browser: Browser | undefined;
 
 export async function ensureBrowser(): Promise<Browser> {
   if (browser && browser.isConnected()) return browser;
 
-  browser = await chromium.launch({ headless: true });
+  const headless = process.env.HEADLESS !== 'false';
+  try {
+    browser = await chromium.launch({ headless });
+  } catch (err) {
+    throw new UserFriendlyError(
+      `Failed to launch Chromium: ${(err as Error).message}`,
+      'Run: npx playwright install chromium',
+    );
+  }
   browser.on('disconnected', () => { browser = undefined; });
   return browser;
 }

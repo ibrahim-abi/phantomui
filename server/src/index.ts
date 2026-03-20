@@ -22,13 +22,15 @@ import {
 
 import { ALL_TOOLS } from './tools/index.js';
 import {
-  handleGetUiSnapshot, GetUiSnapshotSchema,
-  handleListElements,   ListElementsSchema,
-  handleGenerateTests,  GenerateTestsSchema,
-  handleRunTest,        RunTestSchema,
-  handleGetResults,     GetResultsSchema,
-  handleRetryFailed,    RetryFailedSchema,
-  handleSaveReport,     SaveReportSchema,
+  handleGetUiSnapshot,    GetUiSnapshotSchema,
+  handleListElements,     ListElementsSchema,
+  handleGenerateTests,    GenerateTestsSchema,
+  handleRunTest,          RunTestSchema,
+  handleGetResults,       GetResultsSchema,
+  handleRetryFailed,      RetryFailedSchema,
+  handleSaveReport,       SaveReportSchema,
+  handleDiffSnapshots,    DiffSnapshotsSchema,
+  handleRunTestsParallel, RunTestsParallelSchema,
 } from './tools/index.js';
 
 const SERVER_NAME    = 'ai-ui-mcp';
@@ -93,6 +95,14 @@ async function main() {
         case 'save_report': {
           const parsed = SaveReportSchema.parse(args);
           return await handleSaveReport(parsed);
+        }
+        case 'diff_snapshots': {
+          const parsed = DiffSnapshotsSchema.parse(args);
+          return await handleDiffSnapshots(parsed);
+        }
+        case 'run_tests_parallel': {
+          const parsed = RunTestsParallelSchema.parse(args);
+          return await handleRunTestsParallel(parsed);
         }
 
         default:

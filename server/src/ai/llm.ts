@@ -10,9 +10,12 @@
  *   - Otherwise               → Ollama
  */
 
-import { ask as anthropicAsk }        from './claude.js';
+import { ask as anthropicAsk, askWithUsage as anthropicAskWithUsage } from './claude.js';
+import type { LlmUsage } from './claude.js';
 import { ollamaAsk }                  from './ollama.js';
 import { openAiCompatibleAsk }        from './openai-compatible.js';
+
+export type { LlmUsage };
 
 export type Provider = 'anthropic' | 'ollama' | 'openai-compatible';
 
@@ -89,6 +92,30 @@ export async function askJson<T>(
       'Raw response:\n' + raw.slice(0, 500)
     );
   }
+}
+
+/**
+ * Like ask(), but also returns token usage counts.
+ * For non-Anthropic providers (Ollama, OpenAI-compatible), usage returns 0/0
+ * as those providers do not expose usage in a uniform way.
+ */
+export async function askWithUsage(
+  systemPrompt:  string,
+  userPrompt:    string,
+  modelOverride?: string,
+): Promise<{ text: string; usage: LlmUsage }> {
+  const provider = resolveProvider();
+  const model    = modelOverride ?? resolveModel(provider);
+
+  process.stderr.write(`[ai-ui] provider=${provider}  model=${model}\n`);
+
+  if (provider === 'anthropic') {
+    return anthropicAskWithUsage(systemPrompt, userPrompt, model);
+  }
+
+  // For other providers, delegate to ask() and return zeroed usage
+  const text = await ask(systemPrompt, userPrompt, modelOverride);
+  return { text, usage: { inputTokens: 0, outputTokens: 0 } };
 }
 
 export { resolveProvider, resolveModel };

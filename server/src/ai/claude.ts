@@ -26,18 +26,19 @@ export function getClient(): Anthropic {
 export const DEFAULT_MODEL   = 'claude-sonnet-4-6';
 export const DEFAULT_MAX_TOKENS = 8192;
 
+export interface LlmUsage {
+  inputTokens:  number;
+  outputTokens: number;
+}
+
 /**
- * Sends a single-turn message to Claude and returns the text response.
- *
- * @param systemPrompt - The system prompt (instructions)
- * @param userPrompt   - The user message (data/context)
- * @param model        - Claude model ID (defaults to claude-sonnet-4-6)
+ * Sends a single-turn message to Claude and returns the text response plus real token usage.
  */
-export async function ask(
+export async function askWithUsage(
   systemPrompt: string,
   userPrompt:   string,
   model = DEFAULT_MODEL,
-): Promise<string> {
+): Promise<{ text: string; usage: LlmUsage }> {
   const client = getClient();
 
   const response = await client.messages.create({
@@ -52,7 +53,29 @@ export async function ask(
     throw new Error('[ai-ui] Unexpected Claude response type: ' + block.type);
   }
 
-  return block.text;
+  return {
+    text: block.text,
+    usage: {
+      inputTokens:  response.usage.input_tokens,
+      outputTokens: response.usage.output_tokens,
+    },
+  };
+}
+
+/**
+ * Sends a single-turn message to Claude and returns the text response.
+ *
+ * @param systemPrompt - The system prompt (instructions)
+ * @param userPrompt   - The user message (data/context)
+ * @param model        - Claude model ID (defaults to claude-sonnet-4-6)
+ */
+export async function ask(
+  systemPrompt: string,
+  userPrompt:   string,
+  model = DEFAULT_MODEL,
+): Promise<string> {
+  const { text } = await askWithUsage(systemPrompt, userPrompt, model);
+  return text;
 }
 
 /**

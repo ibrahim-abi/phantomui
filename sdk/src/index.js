@@ -40,10 +40,10 @@ function getSnapshot(options) {
     throw new Error('[ai-sdk] No DOM root available. Pass options.root or run in a browser.');
   }
 
-  var manual = scanner.scan(root);
-  var auto   = doAuto ? autotagger.autoTag(root) : [];
+  var scanResult = scanner.scan(root);
+  var auto       = doAuto ? autotagger.autoTag(root) : [];
 
-  return serializer.serialize(manual, auto);
+  return serializer.serialize(scanResult.elements, auto, scanResult.warnings);
 }
 
 var sdk = {

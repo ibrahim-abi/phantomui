@@ -81,7 +81,7 @@ function deriveLabel(el) {
 
 /**
  * Builds a best-effort CSS selector for an untagged element.
- * Priority: id > name > class > tagname
+ * Priority: id > data-testid > aria-label > role > name > placeholder > class > tagname
  */
 function buildSelector(el) {
   if (!el.tagName) return 'unknown';
@@ -89,8 +89,20 @@ function buildSelector(el) {
 
   if (el.id) return '#' + el.id;
 
+  var testid = el.getAttribute ? el.getAttribute('data-testid') : null;
+  if (testid) return tag + '[data-testid="' + testid + '"]';
+
+  var ariaLabel = el.getAttribute ? el.getAttribute('aria-label') : null;
+  if (ariaLabel) return tag + '[aria-label="' + ariaLabel + '"]';
+
+  var role = el.getAttribute ? el.getAttribute('role') : null;
+  if (role) return '[role="' + role + '"]';
+
   var name = el.getAttribute ? el.getAttribute('name') : null;
   if (name) return tag + '[name="' + name + '"]';
+
+  var placeholder = el.getAttribute ? el.getAttribute('placeholder') : null;
+  if (placeholder) return tag + '[placeholder="' + placeholder + '"]';
 
   if (el.className && typeof el.className === 'string') {
     var classes = el.className.trim().split(/\s+/).join('.');

@@ -3,7 +3,7 @@
  * Takes a validated UI snapshot and returns Claude-generated test scenarios.
  */
 
-import { askJson } from './llm.js';
+import { askWithUsage } from './llm.js';
 import { TEST_GENERATION_SYSTEM_PROMPT, buildGenerationPrompt } from './prompts.js';
 import { validateScenarios } from './schema.js';
 import type { UiSnapshot }        from '../types.js';
@@ -43,12 +43,26 @@ export async function generateTests(
 
   const userPrompt = buildGenerationPrompt(snapshot, hints);
 
-  // Use askJson — strips code fences and parses
-  const raw = await askJson<unknown[]>(
+  const { text: rawText, usage } = await askWithUsage(
     TEST_GENERATION_SYSTEM_PROMPT,
     userPrompt,
     model,
   );
+
+  // Strip markdown code fences if the model wrapped the output
+  const cleaned = rawText
+    .replace(/^```(?:json)?\s*/i, '')
+    .replace(/\s*```\s*$/, '')
+    .trim();
+
+  let raw: unknown[];
+  try {
+    raw = JSON.parse(cleaned) as unknown[];
+  } catch {
+    throw new Error(
+      '[ai-ui] LLM returned invalid JSON.\nRaw response:\n' + rawText.slice(0, 500)
+    );
+  }
 
   const { valid, rejected } = validateScenarios(raw);
 
@@ -56,9 +70,8 @@ export async function generateTests(
     scenarios:    valid,
     rejected,
     model:        model ?? 'claude-sonnet-4-6',
-    // Token counts not directly exposed by askJson — Phase 5 can wire detailed usage
-    promptTokens:  0,
-    outputTokens:  0,
+    promptTokens:  usage.inputTokens,
+    outputTokens:  usage.outputTokens,
     generatedAt:  new Date().toISOString(),
   };
 }

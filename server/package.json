@@ -1,5 +1,5 @@
 {
-  "name": "@ai-ui/server",
+  "name": "@phantomui/server",
   "version": "0.1.0",
   "description": "MCP-compliant server for AI-powered UI testing",
   "type": "module",

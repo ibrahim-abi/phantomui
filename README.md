@@ -85,13 +85,15 @@ npm install @phantomui/sdk
 ### MCP Server — Claude Desktop / Claude Code
 
 ```bash
-claude mcp add phantomui -- npx @phantomui/server
-```
+# 1. Clone and build
+git clone https://github.com/ibrahim-abi/phantomui
+cd phantomui/server && npm install && npm run build
 
-Or run as a standalone HTTP server:
+# 2. Connect to Claude Code
+claude mcp add --transport stdio phantomui node /absolute/path/to/phantomui/server/dist/index.js
 
-```bash
-npx @phantomui/server --port 3100
+# 3. Or run as a standalone HTTP server
+node dist/index.js --port 3100
 ```
 
 ---
@@ -121,11 +123,14 @@ npx @phantomui/server --port 3100
 
 Don't want to annotate your HTML? Auto-tagging discovers inputs, buttons, and links automatically.
 
-**Step 2 — Start the MCP server**
+**Step 2 — Build and connect the MCP server**
 
 ```bash
-npx @phantomui/server
+cd phantomui/server && npm install && npm run build
+claude mcp add --transport stdio phantomui node /absolute/path/to/phantomui/server/dist/index.js
 ```
+
+Then start your frontend app (`npm run dev`) so it's reachable at a local URL.
 
 **Step 3 — Ask Claude**
 

@@ -31,3 +31,14 @@ test-results/
 *.zip
 mcp-playwright-main/
 playwright-skill-main/
+
+# Marketing / personal assets
+linkedin/
+
+# Generated test reports
+reports/
+
+# Internal planning docs
+PROJECT_PROPOSAL.md
+UPCOMING.md
+Concept.md

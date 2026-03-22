@@ -8,7 +8,7 @@
  * Webhook: if WEBHOOK_URL is set, posts result JSON after each store (fire-and-forget).
  */
 
-import type { TestResult, TestScenario } from '../types.js';
+import type { TestResult, TestScenario, TestStatus } from '../types.js';
 import fs from 'fs/promises';
 import path from 'path';
 import os from 'os';
@@ -113,6 +113,41 @@ export async function listRunIds(): Promise<string[]> {
   } catch {
     return inMemory;
   }
+}
+
+export interface RunSummary {
+  runId:       string;
+  scenario:    string;
+  status:      TestStatus;
+  durationMs:  number;
+  startedAt:   string;
+  finishedAt:  string;
+  stepCount:   number;
+  passedSteps: number;
+  failedSteps: number;
+}
+
+export async function listRunSummaries(): Promise<RunSummary[]> {
+  const ids = await listRunIds();
+  const summaries: RunSummary[] = [];
+  for (const id of ids) {
+    const record = await getRecord(id);
+    if (!record) continue;
+    const r = record.result;
+    summaries.push({
+      runId:       r.runId,
+      scenario:    r.scenario,
+      status:      r.status,
+      durationMs:  r.durationMs,
+      startedAt:   r.startedAt,
+      finishedAt:  r.finishedAt,
+      stepCount:   r.steps.length,
+      passedSteps: r.steps.filter(s => s.status === 'passed').length,
+      failedSteps: r.steps.filter(s => s.status === 'failed').length,
+    });
+  }
+  summaries.sort((a, b) => new Date(b.startedAt).getTime() - new Date(a.startedAt).getTime());
+  return summaries;
 }
 
 export function deleteRecord(runId: string): void {

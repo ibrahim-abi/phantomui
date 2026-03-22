@@ -2,7 +2,9 @@
  * Express HTTP REST API for AI-UI MCP Server.
  *
  * Routes:
+ *   GET  /                 → dashboard UI
  *   GET  /health           → server info + uptime
+ *   GET  /runs             → list all test runs with summary data
  *   POST /snapshot         → capture UI snapshot from a URL
  *   POST /run              → execute a test scenario
  *   GET  /results/:runId   → fetch stored test result
@@ -10,7 +12,8 @@
  */
 
 import express, { Request, Response, NextFunction } from 'express';
-import { getRecord, listRunIds } from './runner/store.js';
+import { getRecord, listRunIds, listRunSummaries } from './runner/store.js';
+import { renderDashboard } from './dashboard.js';
 import { executeScenario } from './runner/executor.js';
 import { generateReport, type ReportFormat } from './reports/index.js';
 import type { TestResult } from './types.js';
@@ -41,6 +44,12 @@ export async function startHttpServer(port: number): Promise<void> {
 
   // ── Routes ────────────────────────────────────────────────────────────────
 
+  /** Dashboard UI */
+  app.get('/', (_req: Request, res: Response) => {
+    res.setHeader('Content-Type', 'text/html');
+    res.send(renderDashboard());
+  });
+
   /** Health check */
   app.get('/health', (_req: Request, res: Response) => {
     res.json({
@@ -49,6 +58,16 @@ export async function startHttpServer(port: number): Promise<void> {
       status:  'ok',
       uptime:  process.uptime(),
     });
+  });
+
+  /** List all test runs with lightweight summary data */
+  app.get('/runs', async (_req: Request, res: Response) => {
+    try {
+      const runs = await listRunSummaries();
+      res.json({ runs });
+    } catch (err) {
+      res.status(500).json({ error: err instanceof Error ? err.message : String(err) });
+    }
   });
 
   /** Capture a UI snapshot from a live URL */

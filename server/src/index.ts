@@ -7,7 +7,7 @@ import 'dotenv/config';
  * Pass --port <n> for HTTP mode.
  *
  * Stdio usage (Claude Code):
- *   claude mcp add --transport stdio ai-ui node dist/index.js
+ *   claude mcp add --transport stdio phantomui node dist/index.js
  *
  * HTTP usage:
  *   node dist/index.js --port 3100
@@ -33,8 +33,8 @@ import {
   handleRunTestsParallel, RunTestsParallelSchema,
 } from './tools/index.js';
 
-const SERVER_NAME    = 'ai-ui-mcp';
-const SERVER_VERSION = '0.1.0';
+const SERVER_NAME    = 'phantomui-mcp';
+const SERVER_VERSION = '0.1.1';
 
 // ─── Parse CLI args ────────────────────────────────────────────────────────
 function parseArgs(): { port?: number } {
@@ -131,7 +131,7 @@ async function main() {
   const transport = new StdioServerTransport();
   await server.connect(transport);
 
-  process.stderr.write(`[ai-ui-mcp] MCP server running (stdio) — ${ALL_TOOLS.length} tools registered\n`);
+  process.stderr.write(`[phantomui-mcp] MCP server running (stdio) — ${ALL_TOOLS.length} tools registered\n`);
 
   // Graceful shutdown
   async function shutdown() {
@@ -144,6 +144,6 @@ async function main() {
 }
 
 main().catch((err) => {
-  process.stderr.write(`[ai-ui-mcp] Fatal: ${err}\n`);
+  process.stderr.write(`[phantomui-mcp] Fatal: ${err}\n`);
   process.exit(1);
 });

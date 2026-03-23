@@ -89,7 +89,7 @@ interface ElementDescriptor {
 interface SnapshotMeta {
   manualCount: number;   // elements with data-ai-id
   autoCount:   number;   // auto-discovered elements
-  sdkVersion:  string;   // e.g. "0.1.0"
+  sdkVersion:  string;   // e.g. "0.1.4"
 }
 ```
 

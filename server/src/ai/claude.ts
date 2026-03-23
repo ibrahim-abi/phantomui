@@ -13,7 +13,7 @@ export function getClient(): Anthropic {
   const apiKey = process.env.ANTHROPIC_API_KEY;
   if (!apiKey) {
     throw new Error(
-      '[ai-ui] ANTHROPIC_API_KEY is not set. ' +
+      '[phantomui] ANTHROPIC_API_KEY is not set. ' +
       'Export it before starting the server:\n' +
       '  export ANTHROPIC_API_KEY=sk-ant-...'
     );
@@ -50,7 +50,7 @@ export async function askWithUsage(
 
   const block = response.content[0];
   if (block.type !== 'text') {
-    throw new Error('[ai-ui] Unexpected Claude response type: ' + block.type);
+    throw new Error('[phantomui] Unexpected Claude response type: ' + block.type);
   }
 
   return {
@@ -99,7 +99,7 @@ export async function askJson<T>(
     return JSON.parse(cleaned) as T;
   } catch {
     throw new Error(
-      '[ai-ui] Claude returned invalid JSON.\n' +
+      '[phantomui] Claude returned invalid JSON.\n' +
       'Raw response:\n' + raw.slice(0, 500)
     );
   }

@@ -208,7 +208,7 @@ Pass `networkMocks` to `run_tests_parallel` to intercept and stub API calls:
 | `OLLAMA_MODEL` | `llama3.1` | Ollama model name |
 | `OPENAI_COMPATIBLE_BASE_URL` | — | Base URL for OpenAI-compatible endpoints |
 | `OPENAI_COMPATIBLE_MODEL` | `gpt-4o` | Model for OpenAI-compatible provider |
-| `RESULT_STORE_PATH` | `~/.ai-ui/runs` | Directory for persisted test results |
+| `RESULT_STORE_PATH` | `~/.phantomui/runs` | Directory for persisted test results |
 | `WEBHOOK_URL` | — | POST each test result JSON here after every run |
 | `HEADLESS` | `true` | Set to `false` to see the browser during test runs |
 

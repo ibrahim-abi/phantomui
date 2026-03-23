@@ -3,7 +3,7 @@
  * Keyed by runId. Holds both the result and the original scenario
  * so retry_failed can re-run it without the caller re-sending it.
  *
- * Persistence: JSON files in RESULT_STORE_PATH (default ~/.ai-ui/runs/)
+ * Persistence: JSON files in RESULT_STORE_PATH (default ~/.phantomui/runs/)
  * LRU eviction: oldest file deleted when file count exceeds 100.
  * Webhook: if WEBHOOK_URL is set, posts result JSON after each store (fire-and-forget).
  */
@@ -20,7 +20,7 @@ interface RunRecord {
 
 const cache = new Map<string, RunRecord>();
 
-const storeDir = process.env['RESULT_STORE_PATH'] ?? path.join(os.homedir(), '.ai-ui', 'runs');
+const storeDir = process.env['RESULT_STORE_PATH'] ?? path.join(os.homedir(), '.phantomui', 'runs');
 
 async function ensureDir(): Promise<void> {
   await fs.mkdir(storeDir, { recursive: true }).catch(() => {});

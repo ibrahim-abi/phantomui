@@ -1,5 +1,5 @@
 /*!
- * @phantomui/sdk v0.1.1
+ * @phantomui/sdk v0.1.4
  * Zero-dependency SDK for AI-powered UI testing.
  * https://github.com/ibrahim-abi/phantomui
  * (c) Muhammad Ibrahim — MIT License

@@ -1,4 +1,4 @@
-# Contributing to ai-ui
+# Contributing to PhantomUI
 
 All skill levels welcome. Whether you're fixing a typo in the docs or adding a new MCP tool,
 the process is the same.
@@ -11,7 +11,7 @@ the process is the same.
 |---|---|
 | [Getting Started](./docs/getting-started.md) | Full setup walkthrough |
 | [SDK Reference](./docs/sdk-reference.md) | `data-ai-*` attributes and snapshot shape |
-| [MCP Tools](./docs/mcp-tools.md) | All 7 tools — inputs, outputs, examples |
+| [MCP Tools](./docs/mcp-tools.md) | All 9 tools — inputs, outputs, examples |
 | [Reports](./docs/reports.md) | Report formats and CI integration |
 
 ---
@@ -20,7 +20,7 @@ the process is the same.
 
 | Project | Why it's relevant |
 |---|---|
-| [Playwright](https://playwright.dev) | The test runner ai-ui generates code for |
+| [Playwright](https://playwright.dev) | The test runner PhantomUI generates code for |
 | [Model Context Protocol](https://modelcontextprotocol.io) | The protocol the MCP server implements |
 | [mcp-playwright](https://github.com/microsoft/mcp-playwright) | Prior art — Playwright via MCP |
 | [Claude API](https://docs.anthropic.com/en/api/getting-started) | The AI layer powering test generation and analysis |
@@ -57,8 +57,8 @@ Open an issue describing:
 
 ```bash
 # Clone
-git clone https://github.com/muhammad-ibrahim/ai-ui.git
-cd ai-ui
+git clone https://github.com/ibrahim-abi/phantomui.git
+cd phantomui
 
 # Install all workspace deps
 npm install
@@ -107,12 +107,11 @@ docs: update MCP tools reference for save_report
 ## Package Layout
 
 ```
-ai-ui/
-├── sdk/          @phantomui/sdk     — frontend SDK, zero deps
-├── server/       @ai-ui/server  — MCP server + HTTP API + reporters
-├── runner/                      — Playwright runner helpers
-├── examples/                    — Demo HTML pages
-└── docs/                        — Guides and API reference
+phantomui/
+├── sdk/          @phantomui/sdk    — frontend SDK, zero deps
+├── server/       @phantomui/server — MCP server + HTTP API + reporters
+├── examples/                       — Demo HTML pages
+└── docs/                           — Guides and API reference
 ```
 
 Each workspace has its own `package.json` and test suite. Root `package.json` wires them together

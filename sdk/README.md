@@ -82,7 +82,7 @@ Output:
       "source": "manual"
     }
   ],
-  "meta": { "manualCount": 2, "autoCount": 0, "sdkVersion": "0.1.2" }
+  "meta": { "manualCount": 2, "autoCount": 0, "sdkVersion": "0.1.4" }
 }
 ```
 
@@ -150,12 +150,12 @@ const { getSnapshot } = useAiSnapshot();
 ### Angular
 
 ```ts
-import { AiSnapshotService } from '@phantomui/sdk/adapters/angular';
+import { AiSdkService } from '@phantomui/sdk/adapters/angular';
 
 @Component({ ... })
 export class LoginComponent {
-  constructor(private aiSnapshot: AiSnapshotService) {}
-  getSnapshot() { return this.aiSnapshot.getSnapshot(); }
+  constructor(private aiSdk: AiSdkService) {}
+  getSnapshot() { return this.aiSdk.getSnapshot(); }
 }
 ```
 

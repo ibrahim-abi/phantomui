@@ -18,8 +18,8 @@ import { executeScenario } from './runner/executor.js';
 import { generateReport, type ReportFormat } from './reports/index.js';
 import type { TestResult } from './types.js';
 
-const SERVER_NAME    = 'ai-ui-mcp';
-const SERVER_VERSION = '0.1.0';
+const SERVER_NAME    = 'phantomui-mcp';
+const SERVER_VERSION = '0.1.1';
 
 export async function startHttpServer(port: number): Promise<void> {
   const app = express();
@@ -175,14 +175,14 @@ export async function startHttpServer(port: number): Promise<void> {
   // ── 4. Error handler (4 params required by Express) ───────────────────────
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
   app.use((err: Error, _req: Request, res: Response, _next: NextFunction) => {
-    process.stderr.write(`[ai-ui-mcp] HTTP error: ${err.message}\n`);
+    process.stderr.write(`[phantomui-mcp] HTTP error: ${err.message}\n`);
     res.status(500).json({ error: err.message });
   });
 
   // ── Start listening ────────────────────────────────────────────────────────
   await new Promise<void>((resolve) => {
     app.listen(port, () => {
-      process.stderr.write(`[ai-ui-mcp] HTTP server listening on http://localhost:${port}\n`);
+      process.stderr.write(`[phantomui-mcp] HTTP server listening on http://localhost:${port}\n`);
       resolve();
     });
   });

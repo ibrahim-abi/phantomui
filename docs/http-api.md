@@ -32,6 +32,14 @@ All error responses use HTTP 4xx/5xx status codes with a JSON body:
 
 ## Routes
 
+### `GET /`
+
+Returns the PhantomUI local dashboard — a self-contained dark-mode HTML UI. Open in a browser to take snapshots, browse element grids, view test run history, and export reports.
+
+**Response `200`** — `text/html` (self-contained page, no external dependencies)
+
+---
+
 ### `GET /health`
 
 Returns server info and uptime. Useful for liveness probes.
@@ -40,8 +48,8 @@ Returns server info and uptime. Useful for liveness probes.
 
 ```json
 {
-  "server":  "ai-ui-mcp",
-  "version": "0.1.0",
+  "server":  "phantomui-mcp",
+  "version": "0.1.1",
   "status":  "ok",
   "uptime":  42.3
 }
@@ -86,7 +94,7 @@ Navigates to a URL, injects the PhantomUI SDK, and returns a structured `UiSnaps
   "meta": {
     "manualCount": 4,
     "autoCount":   2,
-    "sdkVersion":  "0.1.1"
+    "sdkVersion":  "0.1.3"
   }
 }
 ```
@@ -171,6 +179,28 @@ curl http://localhost:3100/results/550e8400-e29b-41d4-a716-446655440000
 
 ---
 
+### `GET /runs`
+
+Returns a lightweight summary list of all stored test runs.
+
+**Response `200`**
+
+```json
+{
+  "runs": [
+    { "runId": "550e8400-...", "scenarioName": "Login — Happy Path", "status": "passed", "durationMs": 412 }
+  ]
+}
+```
+
+**curl example**
+
+```bash
+curl http://localhost:3100/runs
+```
+
+---
+
 ### `POST /report`
 
 Generates a test report for one or all stored runs.
@@ -219,9 +249,14 @@ curl -X POST http://localhost:3100/report \
 
 | Variable | Default | Description |
 |----------|---------|-------------|
-| `ANTHROPIC_API_KEY` | — | Required for `generate_tests` MCP tool |
-| `RESULT_STORE_PATH` | `~/.ai-ui/runs` | Directory for persisted run JSON files |
+| `LLM_PROVIDER` | auto-detect | `anthropic` · `ollama` · `openai-compatible` |
+| `ANTHROPIC_API_KEY` | — | Required for Anthropic provider |
+| `AI_MODEL` | `claude-sonnet-4-6` | Override Anthropic model |
+| `OLLAMA_BASE_URL` | `http://localhost:11434` | Ollama server URL |
+| `OLLAMA_MODEL` | `llama3.1` | Ollama model name |
+| `OPENAI_COMPATIBLE_BASE_URL` | — | Base URL for OpenAI-compatible endpoints |
+| `OPENAI_COMPATIBLE_API_KEY` | — | API key for OpenAI-compatible provider |
+| `OPENAI_COMPATIBLE_MODEL` | `gpt-4o` | Model for OpenAI-compatible provider |
+| `RESULT_STORE_PATH` | `~/.phantomui/runs` | Directory for persisted run JSON files |
 | `WEBHOOK_URL` | — | If set, POSTs each `TestResult` JSON to this URL after every run |
-| `LLM_PROVIDER` | `anthropic` | LLM backend: `anthropic` or `openai` |
-| `OPENAI_API_KEY` | — | Required if `LLM_PROVIDER=openai` |
-| `OPENAI_MODEL` | `gpt-4o` | OpenAI model name |
+| `HEADLESS` | `true` | Set to `false` to show the browser during test runs |

@@ -44,7 +44,7 @@ export async function ollamaAsk(
     });
   } catch (err) {
     throw new Error(
-      `[ai-ui] Could not reach Ollama at ${baseUrl}. ` +
+      `[phantomui] Could not reach Ollama at ${baseUrl}. ` +
       `Is it running? Start it with: ollama serve\n` +
       `Original error: ${(err as Error).message}`
     );
@@ -53,7 +53,7 @@ export async function ollamaAsk(
   if (!res.ok) {
     const body = await res.text().catch(() => '');
     throw new Error(
-      `[ai-ui] Ollama returned HTTP ${res.status}. ` +
+      `[phantomui] Ollama returned HTTP ${res.status}. ` +
       `Make sure the model is pulled: ollama pull ${model}\n` +
       `Response: ${body.slice(0, 300)}`
     );

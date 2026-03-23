@@ -1,4 +1,4 @@
-// @phantomui/sdk v0.1.1 — TypeScript declarations
+// @phantomui/sdk v0.1.4 — TypeScript declarations
 
 export type ElementRole = 'input' | 'action' | 'display' | 'nav';
 export type ElementSource = 'manual' | 'auto';
@@ -37,6 +37,8 @@ export interface UiSnapshot {
   timestamp: string;
   /** All discovered elements (manual + auto) */
   elements: ElementDescriptor[];
+  /** Duplicate data-ai-id warnings emitted by the scanner */
+  warnings?: string[];
   meta: SnapshotMeta;
 }
 

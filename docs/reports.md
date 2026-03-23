@@ -1,6 +1,6 @@
 # Test Reports
 
-AI-UI can generate test reports in three formats via the `save_report` MCP tool
+PhantomUI can generate test reports in three formats via the `save_report` MCP tool
 or the `POST /report` HTTP endpoint.
 
 ---

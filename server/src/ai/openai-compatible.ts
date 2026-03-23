@@ -43,7 +43,7 @@ export async function openAiCompatibleAsk(
     });
   } catch (err) {
     throw new Error(
-      `[ai-ui] Could not reach OpenAI-compatible server at ${baseUrl}.\n` +
+      `[phantomui] Could not reach OpenAI-compatible server at ${baseUrl}.\n` +
       `Original error: ${(err as Error).message}`
     );
   }
@@ -51,7 +51,7 @@ export async function openAiCompatibleAsk(
   if (!res.ok) {
     const body = await res.text().catch(() => '');
     throw new Error(
-      `[ai-ui] OpenAI-compatible server returned HTTP ${res.status}.\n` +
+      `[phantomui] OpenAI-compatible server returned HTTP ${res.status}.\n` +
       `Response: ${body.slice(0, 300)}`
     );
   }

@@ -48,7 +48,7 @@ export async function ask(
   const provider = resolveProvider();
   const model    = modelOverride ?? resolveModel(provider);
 
-  process.stderr.write(`[ai-ui] provider=${provider}  model=${model}\n`);
+  process.stderr.write(`[phantomui] provider=${provider}  model=${model}\n`);
 
   switch (provider) {
     case 'anthropic':
@@ -88,7 +88,7 @@ export async function askJson<T>(
     return JSON.parse(cleaned) as T;
   } catch {
     throw new Error(
-      '[ai-ui] LLM returned invalid JSON.\n' +
+      '[phantomui] LLM returned invalid JSON.\n' +
       'Raw response:\n' + raw.slice(0, 500)
     );
   }
@@ -107,7 +107,7 @@ export async function askWithUsage(
   const provider = resolveProvider();
   const model    = modelOverride ?? resolveModel(provider);
 
-  process.stderr.write(`[ai-ui] provider=${provider}  model=${model}\n`);
+  process.stderr.write(`[phantomui] provider=${provider}  model=${model}\n`);
 
   if (provider === 'anthropic') {
     return anthropicAskWithUsage(systemPrompt, userPrompt, model);

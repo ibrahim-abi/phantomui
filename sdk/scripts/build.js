@@ -245,6 +245,8 @@ export interface UiSnapshot {
   timestamp: string;
   /** All discovered elements (manual + auto) */
   elements: ElementDescriptor[];
+  /** Duplicate data-ai-id warnings emitted by the scanner */
+  warnings?: string[];
   meta: SnapshotMeta;
 }
 

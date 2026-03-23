@@ -1,6 +1,6 @@
 {
   "name": "@phantomui/server",
-  "version": "0.1.0",
+  "version": "0.1.1",
   "description": "MCP-compliant server for AI-powered UI testing",
   "type": "module",
   "main": "dist/index.js",

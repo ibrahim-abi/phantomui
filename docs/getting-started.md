@@ -1,4 +1,4 @@
-# Getting Started — AI-UI in 5 Minutes
+# Getting Started — PhantomUI in 5 Minutes
 
 This guide gets you from zero to running AI-generated Playwright tests against your UI.
 
@@ -84,7 +84,7 @@ npm run build
 Add to Claude Code (stdio transport):
 
 ```bash
-claude mcp add --transport stdio ai-ui node dist/index.js
+claude mcp add --transport stdio phantomui node /absolute/path/to/server/dist/index.js
 ```
 
 Or add to `~/.claude/claude_desktop_config.json` for Claude Desktop:
@@ -92,7 +92,7 @@ Or add to `~/.claude/claude_desktop_config.json` for Claude Desktop:
 ```json
 {
   "mcpServers": {
-    "ai-ui": {
+    "phantomui": {
       "command": "node",
       "args": ["/absolute/path/to/server/dist/index.js"]
     }
@@ -132,14 +132,13 @@ xdg-open reports/login.html     # Linux
 
 ## HTTP mode (optional)
 
-Start as a REST API server:
+Start as a REST API + local dashboard server:
 
 ```bash
 node dist/index.js --port 3100
-curl http://localhost:3100/health
 ```
 
-See [mcp-tools.md](./mcp-tools.md) and the HTTP routes for full API details.
+Then open `http://localhost:3100` in your browser for the full dashboard UI (snapshot capture, element grid, test run history, one-click report export). For the raw API, see [http-api.md](./http-api.md) and [mcp-tools.md](./mcp-tools.md).
 
 ---
 

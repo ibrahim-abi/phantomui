@@ -1,6 +1,6 @@
 # MCP Tools Reference
 
-The AI-UI MCP server exposes 7 tools to Claude. All tools are available in both
+The PhantomUI MCP server exposes 9 tools to Claude. All tools are available in both
 stdio mode (Claude Code / Claude Desktop) and HTTP mode.
 
 ---
@@ -124,7 +124,45 @@ Run the login scenario from the generated tests
 
 ---
 
-## 5. `get_results`
+## 5. `run_tests_parallel`
+
+Runs multiple scenarios concurrently (up to 10 at once) with optional network mocking, session injection, and coverage tracking.
+
+### Parameters
+
+| Name | Type | Required | Description |
+|---|---|---|---|
+| `scenarios` | TestScenario[] | ✓ | Array of scenarios to run |
+| `concurrency` | number | | Max parallel browsers. Default: `3`, max: `10` |
+| `session` | object | | Shared session (cookies, localStorage, auth_token) applied to all scenarios |
+
+Each scenario may also include a `networkMocks` array:
+
+```json
+{
+  "networkMocks": [
+    { "urlPattern": "**/api/payment", "status": 200, "body": { "status": "approved" } }
+  ]
+}
+```
+
+### Step actions
+
+Supports all `run_test` actions plus: `hover` · `keyboard` · `scroll` · `check`
+
+### Returns
+
+`{ summary, runIds }` — aggregate pass/fail counts and all individual `runId`s.
+
+### Example prompt
+
+```
+Run all three login scenarios in parallel
+```
+
+---
+
+## 6. `get_results`
 
 Fetches the full step-by-step result for a stored test run.
 
@@ -140,7 +178,7 @@ Full `TestResult` with per-step status, errors, and timing.
 
 ---
 
-## 6. `retry_failed`
+## 7. `retry_failed`
 
 Re-runs only the failed steps from a previous run, with optional overrides.
 
@@ -158,7 +196,7 @@ New `TestResult` with a fresh `runId`.
 
 ---
 
-## 7. `save_report`
+## 8. `save_report`
 
 Generates a report and saves it to disk.
 
@@ -179,6 +217,29 @@ Generates a report and saves it to disk.
 ```
 Save an HTML report of all runs to ./reports/today.html
 Save a JUnit XML report for run abc-123 to ./reports/abc-123.xml
+```
+
+---
+
+## 9. `diff_snapshots`
+
+Compares two `UiSnapshot` objects and returns a field-level diff of added, removed, and changed elements. Useful for detecting unintended UI regressions between deployments.
+
+### Parameters
+
+| Name | Type | Required | Description |
+|---|---|---|---|
+| `before` | UiSnapshot | ✓ | The baseline snapshot |
+| `after` | UiSnapshot | ✓ | The snapshot to compare against the baseline |
+
+### Returns
+
+`{ added, removed, changed }` — arrays of element IDs in each category, with field-level diffs for changed elements.
+
+### Example prompt
+
+```
+Diff the snapshot from yesterday's build against today's snapshot and show what changed
 ```
 
 ---

@@ -60,7 +60,7 @@ export async function generateTests(
     raw = JSON.parse(cleaned) as unknown[];
   } catch {
     throw new Error(
-      '[ai-ui] LLM returned invalid JSON.\nRaw response:\n' + rawText.slice(0, 500)
+      '[phantomui] LLM returned invalid JSON.\nRaw response:\n' + rawText.slice(0, 500)
     );
   }
 

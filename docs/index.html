@@ -1,0 +1,345 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width,initial-scale=1"/>
+<title>PhantomUI — AI-Powered UI Testing</title>
+<meta name="description" content="Replace brittle CSS selectors with stable semantic attributes. AI-powered UI testing with Claude MCP, Playwright, and a zero-dependency SDK."/>
+<meta property="og:title" content="PhantomUI — AI-Powered UI Testing"/>
+<meta property="og:description" content="Tests that survive every refactor. Zero CSS selectors. Claude MCP + Playwright + &lt;5KB SDK."/>
+<style>
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+:root{
+  --bg:#0d0f14;--surf:#13161f;--border:#1e2330;
+  --p:#7c3aed;--p2:#a78bfa;--c:#22d3ee;--g:#34d399;--y:#fbbf24;
+  --text:#f1f5f9;--muted:#64748b;--sub:#94a3b8;
+  --mono:'JetBrains Mono','Fira Code',monospace;
+}
+html{background:var(--bg);color:var(--text);font-family:'Inter',system-ui,sans-serif;font-size:15px;line-height:1.6;scroll-behavior:smooth}
+body{min-height:100vh}
+a{color:var(--c);text-decoration:none}
+a:hover{text-decoration:underline}
+code{font-family:var(--mono);font-size:.85em;background:rgba(34,211,238,.08);color:var(--c);padding:2px 6px;border-radius:4px}
+
+/* ── Nav ── */
+nav{position:sticky;top:0;z-index:100;background:rgba(13,15,20,.85);backdrop-filter:blur(12px);border-bottom:1px solid var(--border);padding:12px 32px;display:flex;align-items:center;justify-content:space-between}
+.nav-logo{display:flex;align-items:center;gap:8px;font-size:14px;font-weight:700;color:var(--text)}
+.nav-icon{width:28px;height:28px;border-radius:8px;background:linear-gradient(135deg,#7c3aed,#22d3ee);display:flex;align-items:center;justify-content:center;font-size:16px}
+.nav-links{display:flex;gap:24px;align-items:center}
+.nav-links a{font-size:13px;color:var(--sub);transition:color .15s}
+.nav-links a:hover{color:var(--text);text-decoration:none}
+.nav-btn{background:linear-gradient(135deg,#7c3aed,#22d3ee);color:#fff !important;padding:7px 18px;border-radius:8px;font-size:13px;font-weight:700;transition:opacity .15s}
+.nav-btn:hover{opacity:.88;text-decoration:none}
+
+/* ── Hero ── */
+.hero{padding:90px 32px 70px;text-align:center;position:relative;overflow:hidden}
+.hero::before{content:'';position:absolute;width:500px;height:500px;border-radius:50%;background:radial-gradient(circle,rgba(124,58,237,.15),transparent 70%);top:-150px;left:50%;transform:translateX(-50%);pointer-events:none}
+.hero-eyebrow{font-size:11px;font-weight:700;letter-spacing:3px;text-transform:uppercase;color:var(--p2);margin-bottom:16px}
+.hero-title{font-size:clamp(36px,6vw,68px);font-weight:900;letter-spacing:-.04em;line-height:1.08;margin-bottom:20px}
+.hero-title .grad{background:linear-gradient(90deg,#a78bfa,#22d3ee);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text}
+.hero-sub{font-size:17px;color:var(--sub);max-width:580px;margin:0 auto 32px;line-height:1.65}
+.hero-actions{display:flex;gap:12px;justify-content:center;flex-wrap:wrap}
+.btn-primary{background:linear-gradient(135deg,#7c3aed,#22d3ee);color:#fff;padding:13px 28px;border-radius:10px;font-size:14px;font-weight:700;transition:opacity .15s;display:inline-flex;align-items:center;gap:8px}
+.btn-primary:hover{opacity:.88;text-decoration:none}
+.btn-secondary{background:var(--surf);border:1px solid var(--border);color:var(--text);padding:13px 28px;border-radius:10px;font-size:14px;font-weight:600;transition:background .15s;display:inline-flex;align-items:center;gap:8px}
+.btn-secondary:hover{background:#1a1e2c;text-decoration:none}
+.hero-stats{display:flex;gap:12px;justify-content:center;flex-wrap:wrap;margin-top:40px}
+.hero-stat{background:var(--surf);border:1px solid var(--border);border-radius:10px;padding:12px 20px;text-align:center;min-width:90px}
+.hero-stat-n{font-size:22px;font-weight:900;letter-spacing:-.04em}
+.hero-stat-l{font-size:10px;color:var(--muted);text-transform:uppercase;letter-spacing:.5px;margin-top:2px}
+
+/* ── Section ── */
+section{padding:64px 32px;max-width:1100px;margin:0 auto}
+.section-label{font-size:10px;font-weight:700;letter-spacing:2.5px;text-transform:uppercase;color:var(--p2);margin-bottom:8px}
+.section-title{font-size:clamp(22px,3vw,32px);font-weight:900;letter-spacing:-.03em;margin-bottom:12px}
+.section-title .c-p{color:var(--p2)}
+.section-title .c-c{color:var(--c)}
+.section-title .c-g{color:var(--g)}
+.section-desc{font-size:14px;color:var(--sub);max-width:600px;line-height:1.65;margin-bottom:32px}
+
+/* ── Problem/Solution ── */
+.compare{display:grid;grid-template-columns:1fr 1fr;gap:16px;margin-top:24px}
+.compare-box{background:var(--surf);border:1px solid var(--border);border-radius:12px;padding:20px 22px}
+.compare-box.bad{border-color:rgba(248,113,113,.3)}
+.compare-box.good{border-color:rgba(52,211,153,.3)}
+.compare-label{font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:1px;margin-bottom:10px}
+.bad .compare-label{color:var(--r,#f87171)}
+.good .compare-label{color:var(--g)}
+.compare-box pre{background:#070910;border:1px solid var(--border);border-radius:7px;padding:10px 13px;font-family:var(--mono);font-size:12px;color:#c4cfde;white-space:pre-wrap;word-break:break-all}
+
+/* ── Features grid ── */
+.features{display:grid;grid-template-columns:repeat(auto-fit,minmax(240px,1fr));gap:16px;margin-top:16px}
+.feat-card{background:var(--surf);border:1px solid var(--border);border-radius:12px;padding:20px 22px}
+.feat-icon{font-size:24px;margin-bottom:10px}
+.feat-title{font-size:14px;font-weight:700;margin-bottom:6px;color:var(--text)}
+.feat-desc{font-size:12.5px;color:var(--sub);line-height:1.6}
+.feat-card.fp{border-color:rgba(124,58,237,.3)} .feat-card.fp .feat-title{color:var(--p2)}
+.feat-card.fc{border-color:rgba(34,211,238,.25)} .feat-card.fc .feat-title{color:var(--c)}
+.feat-card.fg{border-color:rgba(52,211,153,.25)} .feat-card.fg .feat-title{color:var(--g)}
+.feat-card.fy{border-color:rgba(251,191,36,.25)} .feat-card.fy .feat-title{color:var(--y)}
+
+/* ── Tools grid ── */
+.tools-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin-top:16px}
+.tool-card{background:var(--surf);border:1px solid var(--border);border-radius:10px;padding:14px 16px}
+.tool-num{font-size:9px;font-weight:700;color:var(--muted);margin-bottom:4px;letter-spacing:.5px}
+.tool-name{font-family:var(--mono);font-size:12px;font-weight:700;margin-bottom:4px}
+.tool-desc{font-size:11px;color:var(--sub);line-height:1.45}
+.tc{border-color:rgba(34,211,238,.25)} .tc .tool-name{color:var(--c)}
+.tp{border-color:rgba(124,58,237,.25)} .tp .tool-name{color:var(--p2)}
+.ty{border-color:rgba(251,191,36,.25)} .ty .tool-name{color:var(--y)}
+.tg{border-color:rgba(52,211,153,.25)} .tg .tool-name{color:var(--g)}
+.tr{border-color:rgba(248,113,113,.25)} .tr .tool-name{color:#f87171}
+
+/* ── Workflow ── */
+.workflow-steps{display:grid;grid-template-columns:repeat(5,1fr);gap:0;margin-top:24px;position:relative}
+.workflow-steps::before{content:'';position:absolute;top:30px;left:10%;width:80%;height:2px;background:linear-gradient(90deg,#7c3aed,#22d3ee);z-index:0}
+.wf-step{text-align:center;position:relative;z-index:1}
+.wf-num{width:44px;height:44px;border-radius:12px;background:var(--bg);border:2px solid;display:flex;align-items:center;justify-content:center;font-size:16px;font-weight:900;margin:0 auto 10px}
+.wf-title{font-size:12px;font-weight:700;margin-bottom:4px}
+.wf-desc{font-size:10.5px;color:var(--sub);line-height:1.4;padding:0 4px}
+.wf-step:nth-child(1) .wf-num{border-color:#a78bfa;color:#a78bfa}
+.wf-step:nth-child(2) .wf-num{border-color:#fbbf24;color:#fbbf24}
+.wf-step:nth-child(3) .wf-num{border-color:#34d399;color:#34d399}
+.wf-step:nth-child(4) .wf-num{border-color:#22d3ee;color:#22d3ee}
+.wf-step:nth-child(5) .wf-num{border-color:#a78bfa;color:#a78bfa}
+
+/* ── CTA ── */
+.cta-section{background:linear-gradient(135deg,rgba(124,58,237,.12),rgba(34,211,238,.08));border:1px solid rgba(124,58,237,.25);border-radius:16px;padding:48px 40px;text-align:center;margin:0 32px 64px;position:relative;overflow:hidden}
+.cta-title{font-size:clamp(20px,3vw,28px);font-weight:900;letter-spacing:-.03em;margin-bottom:10px}
+.cta-sub{font-size:14px;color:var(--sub);margin-bottom:28px}
+.cta-row{display:flex;gap:12px;justify-content:center;flex-wrap:wrap}
+
+/* ── Divider ── */
+hr{border:none;border-top:1px solid var(--border);margin:0 32px}
+
+/* ── Footer ── */
+footer{padding:28px 32px;display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:12px}
+.footer-logo{display:flex;align-items:center;gap:8px;font-size:13px;font-weight:700}
+.footer-links{display:flex;gap:20px}
+.footer-links a{font-size:12px;color:var(--muted)}
+.footer-links a:hover{color:var(--text);text-decoration:none}
+.footer-note{font-size:11px;color:var(--muted)}
+
+/* ── Pill ── */
+.pill{display:inline-flex;padding:3px 12px;border-radius:99px;font-size:11px;font-weight:700;border:1px solid;letter-spacing:.3px}
+.pill-p{background:rgba(124,58,237,.12);border-color:rgba(124,58,237,.4);color:var(--p2)}
+.pill-c{background:rgba(34,211,238,.08);border-color:rgba(34,211,238,.35);color:var(--c)}
+.pill-g{background:rgba(52,211,153,.08);border-color:rgba(52,211,153,.35);color:var(--g)}
+.pill-y{background:rgba(251,191,36,.08);border-color:rgba(251,191,36,.35);color:var(--y)}
+
+.pill-row{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:28px}
+
+/* ── Slideshow CTA banner ── */
+.slideshow-banner{background:var(--surf);border:1px solid rgba(34,211,238,.3);border-radius:14px;padding:28px 32px;display:flex;align-items:center;justify-content:space-between;gap:20px;margin-top:32px;flex-wrap:wrap}
+.slideshow-banner-text h3{font-size:16px;font-weight:800;margin-bottom:4px;color:var(--text)}
+.slideshow-banner-text p{font-size:13px;color:var(--sub)}
+
+@media(max-width:640px){
+  .compare,.tools-grid{grid-template-columns:1fr}
+  .workflow-steps{grid-template-columns:1fr;gap:16px}
+  .workflow-steps::before{display:none}
+  .slideshow-banner{flex-direction:column;text-align:center}
+  nav .nav-links{display:none}
+}
+</style>
+</head>
+<body>
+
+<nav>
+  <div class="nav-logo">
+    <div class="nav-icon">👻</div>
+    PhantomUI
+  </div>
+  <div class="nav-links">
+    <a href="#features">Features</a>
+    <a href="#tools">MCP Tools</a>
+    <a href="#workflow">Workflow</a>
+    <a href="slideshow/" class="nav-btn">View Deck →</a>
+  </div>
+</nav>
+
+<!-- Hero -->
+<div class="hero">
+  <div class="hero-eyebrow">AI-Powered UI Testing Platform</div>
+  <h1 class="hero-title">
+    Stop Chasing<br>
+    <span class="grad">Broken Selectors</span>
+  </h1>
+  <p class="hero-sub">Replace brittle CSS selectors with stable semantic attributes. Tests that survive every refactor — forever. Powered by Claude AI + Playwright.</p>
+  <div class="hero-actions">
+    <a href="slideshow/" class="btn-primary">▶ View Pitch Deck</a>
+    <a href="https://github.com/ibrahim-abi/phantomui" class="btn-secondary" target="_blank">★ GitHub</a>
+    <a href="https://www.npmjs.com/package/@phantomui/sdk" class="btn-secondary" target="_blank">📦 npm</a>
+  </div>
+  <div class="hero-stats">
+    <div class="hero-stat"><div class="hero-stat-n" style="color:#a78bfa">&lt;5KB</div><div class="hero-stat-l">SDK Size</div></div>
+    <div class="hero-stat"><div class="hero-stat-n" style="color:#22d3ee">9</div><div class="hero-stat-l">MCP Tools</div></div>
+    <div class="hero-stat"><div class="hero-stat-n" style="color:#34d399">3</div><div class="hero-stat-l">Frameworks</div></div>
+    <div class="hero-stat"><div class="hero-stat-n" style="color:#fbbf24">3</div><div class="hero-stat-l">LLM Providers</div></div>
+    <div class="hero-stat"><div class="hero-stat-n" style="color:#f87171">0</div><div class="hero-stat-l">Cloud Deps</div></div>
+  </div>
+</div>
+
+<hr/>
+
+<!-- Problem / Solution -->
+<section>
+  <div class="section-label">The Problem</div>
+  <h2 class="section-title">CSS Selectors <span class="c-p">Break.</span> Semantic Attributes <span class="c-g">Don't.</span></h2>
+  <p class="section-desc">The moment a developer reorganises your DOM, every positional selector fails — not because the feature broke, but because a div moved.</p>
+  <div class="compare">
+    <div class="compare-box bad">
+      <div class="compare-label">❌ Fragile — CSS Selector</div>
+      <pre>div.container &gt; form
+  &gt; div:nth-child(2)
+    &gt; input.form-control
+
+// Breaks on every refactor</pre>
+    </div>
+    <div class="compare-box good">
+      <div class="compare-label">✅ Stable — Semantic ID</div>
+      <pre>[data-ai-id="login-email"]
+
+// Stable forever ✓</pre>
+    </div>
+  </div>
+</section>
+
+<hr/>
+
+<!-- Features -->
+<section id="features">
+  <div class="section-label">Features</div>
+  <h2 class="section-title">Everything You Need to <span class="c-c">Test Smarter</span></h2>
+  <div class="pill-row">
+    <span class="pill pill-p">Claude MCP</span>
+    <span class="pill pill-c">Playwright</span>
+    <span class="pill pill-g">&lt;5 KB SDK</span>
+    <span class="pill pill-y">Zero Dependencies</span>
+    <span class="pill pill-p">MIT License</span>
+  </div>
+  <div class="features">
+    <div class="feat-card fp">
+      <div class="feat-icon">🏷️</div>
+      <div class="feat-title">Semantic Attributes</div>
+      <div class="feat-desc">Seven <code>data-ai-*</code> attributes describe what elements ARE — id, role, label, action, context, required, state. Survive every refactor.</div>
+    </div>
+    <div class="feat-card fc">
+      <div class="feat-icon">📸</div>
+      <div class="feat-title">UI Snapshot API</div>
+      <div class="feat-desc"><code>getSnapshot()</code> returns structured JSON with every element. Claude reads it to generate precise test scenarios automatically.</div>
+    </div>
+    <div class="feat-card fg">
+      <div class="feat-icon">🔍</div>
+      <div class="feat-title">Auto-Tagging</div>
+      <div class="feat-desc">Zero annotations? Auto-discovery finds inputs, buttons, and links on any page. Elements marked <code>source:"auto"</code> for AI confidence weighting.</div>
+    </div>
+    <div class="feat-card fy">
+      <div class="feat-icon">⚡</div>
+      <div class="feat-title">Parallel Execution</div>
+      <div class="feat-desc">Run up to 10 concurrent Playwright browsers with network mocking, session injection, and step-level retry on failures.</div>
+    </div>
+    <div class="feat-card fc">
+      <div class="feat-icon">🖥️</div>
+      <div class="feat-title">Local Dashboard</div>
+      <div class="feat-desc">Full dark-mode UI at <code>localhost:3100</code>. Snapshot any URL, browse element cards, view run history, export reports — no cloud needed.</div>
+    </div>
+    <div class="feat-card fp">
+      <div class="feat-icon">🔌</div>
+      <div class="feat-title">Framework Adapters</div>
+      <div class="feat-desc">Built-in adapters for React (<code>useAiSnapshot</code> hook), Vue 3 (composable + plugin), and Angular (injectable service).</div>
+    </div>
+  </div>
+</section>
+
+<hr/>
+
+<!-- MCP Tools -->
+<section id="tools">
+  <div class="section-label">MCP Tools</div>
+  <h2 class="section-title">9 Tools. <span class="c-p">One Prompt.</span></h2>
+  <p class="section-desc">Claude orchestrates the full pipeline automatically by chaining these tools. You never write test code.</p>
+  <div class="tools-grid">
+    <div class="tool-card tc"><div class="tool-num">01</div><div class="tool-name">get_ui_snapshot</div><div class="tool-desc">Navigate to URL, inject SDK, return full element map</div></div>
+    <div class="tool-card tp"><div class="tool-num">02</div><div class="tool-name">list_elements</div><div class="tool-desc">Filter by role (input/action/nav) or source</div></div>
+    <div class="tool-card ty"><div class="tool-num">03</div><div class="tool-name">generate_tests</div><div class="tool-desc">AI generates TestScenario[] with optional hints</div></div>
+    <div class="tool-card tg"><div class="tool-num">04</div><div class="tool-name">run_test</div><div class="tool-desc">Execute single scenario with Playwright</div></div>
+    <div class="tool-card tg"><div class="tool-num">05</div><div class="tool-name">run_tests_parallel</div><div class="tool-desc">Up to 10 concurrent browsers + network mocking</div></div>
+    <div class="tool-card tc"><div class="tool-num">06</div><div class="tool-name">get_results</div><div class="tool-desc">Full step-by-step results with timing and errors</div></div>
+    <div class="tool-card tr"><div class="tool-num">07</div><div class="tool-name">retry_failed</div><div class="tool-desc">Re-run only failed steps with optional overrides</div></div>
+    <div class="tool-card tp"><div class="tool-num">08</div><div class="tool-name">save_report</div><div class="tool-desc">Export HTML · JSON · JUnit XML to any path</div></div>
+    <div class="tool-card ty"><div class="tool-num">09</div><div class="tool-name">diff_snapshots</div><div class="tool-desc">Detect UI regressions between deploys</div></div>
+  </div>
+</section>
+
+<hr/>
+
+<!-- Workflow -->
+<section id="workflow">
+  <div class="section-label">End-to-End Workflow</div>
+  <h2 class="section-title">One Sentence → <span class="c-g">Full Test Suite</span></h2>
+  <p class="section-desc">"Test the login form at localhost:3000 and save an HTML report." — Claude handles the rest.</p>
+  <div class="workflow-steps">
+    <div class="wf-step">
+      <div class="wf-num">1</div>
+      <div class="wf-title">Snapshot</div>
+      <div class="wf-desc">get_ui_snapshot scans all elements</div>
+    </div>
+    <div class="wf-step">
+      <div class="wf-num">2</div>
+      <div class="wf-title">Generate</div>
+      <div class="wf-desc">Claude creates test scenarios via AI</div>
+    </div>
+    <div class="wf-step">
+      <div class="wf-num">3</div>
+      <div class="wf-title">Execute</div>
+      <div class="wf-desc">Playwright runs scenarios in parallel</div>
+    </div>
+    <div class="wf-step">
+      <div class="wf-num">4</div>
+      <div class="wf-title">Results</div>
+      <div class="wf-desc">Step-by-step pass/fail with timing</div>
+    </div>
+    <div class="wf-step">
+      <div class="wf-num">5</div>
+      <div class="wf-title">Report</div>
+      <div class="wf-desc">HTML + JUnit XML written to disk</div>
+    </div>
+  </div>
+
+  <div class="slideshow-banner">
+    <div class="slideshow-banner-text">
+      <h3>👻 See the Full Pitch Deck</h3>
+      <p>14 slides covering architecture, SDK usage, MCP tools, dashboard, CI/CD, and live demos.</p>
+    </div>
+    <a href="slideshow/" class="btn-primary">Open Slideshow →</a>
+  </div>
+</section>
+
+<!-- CTA -->
+<div class="cta-section">
+  <h2 class="cta-title">Ready to test smarter?</h2>
+  <p class="cta-sub">Install the SDK, connect to Claude, and ask it to test your UI — in under 5 minutes.</p>
+  <div style="background:rgba(0,0,0,.3);border:1px solid var(--border);border-radius:8px;padding:10px 18px;font-family:var(--mono);font-size:13px;color:#c4cfde;display:inline-block;margin-bottom:24px;">npm install @phantomui/sdk</div>
+  <div class="cta-row">
+    <a href="https://github.com/ibrahim-abi/phantomui" class="btn-primary" target="_blank">★ Star on GitHub</a>
+    <a href="https://www.npmjs.com/package/@phantomui/sdk" class="btn-secondary" target="_blank">📦 View on npm</a>
+    <a href="slideshow/" class="btn-secondary">▶ Pitch Deck</a>
+  </div>
+</div>
+
+<hr/>
+<footer>
+  <div class="footer-logo"><div class="nav-icon">👻</div> PhantomUI</div>
+  <div class="footer-links">
+    <a href="https://github.com/ibrahim-abi/phantomui" target="_blank">GitHub</a>
+    <a href="https://www.npmjs.com/package/@phantomui/sdk" target="_blank">npm</a>
+    <a href="slideshow/">Slideshow</a>
+    <a href="sdk-reference.md">SDK Docs</a>
+    <a href="http-api.md">HTTP API</a>
+  </div>
+  <div class="footer-note">MIT License · Muhammad Ibrahim · 2026</div>
+</footer>
+
+</body>
+</html>
